@@ -18,22 +18,22 @@
 - __sde_sample_freq__ (int) – Új zajmátrix mintavétele n lépésenként gSDE használata esetén. Alapértelmezés: -1 (csak minta a közzététel elején)
 - __supported_action_spaces__ (Tuple[Típus[szóköz], ...] | Nincs) – Az algoritmus által támogatott műveleti terek.
 
-__get_env()__
+## get_env()
 Az aktuális környezetet adja vissza (Nincs lehet, ha nincs megadva).
 Visszatér: A jelenlegi környezet
 Visszatérés típusa: VecEnv | None
 
-__get_parameters()__
+## get_parameters()
 Visszaadja az ügynök paramétereit. Ide tartoznak a különböző hálózatok paraméterei, pl. kritikusok (értékfüggvények) és irányelvek (pi függvények).
 Visszatér: A mappelt objektumok nevéből PyTorch state-dicts -ekre.
 Visszatérés típusa: Dict[str, Dict]
 
-__get_vec_normalize_env()__
+## get_vec_normalize_env()
 Ha létezik, küldje vissza a képzési env VecNormalize burkolóját.
 Visszatér: A VecNormalize env.
 Visszatérés típusa: VecNormalize | None
 
-__abstract learn(total_timesteps, callback=Nincs, log_interval=100, tb_log_name='run', reset_num_timesteps=Igaz, progress_bar=False)__
+## abstract learn(total_timesteps, callback=Nincs, log_interval=100, tb_log_name='run', reset_num_timesteps=Igaz, progress_bar=False)__
 Visszaad egy betanított modellt.
 
 ### Paraméterek:
@@ -45,5 +45,42 @@ Visszaad egy betanított modellt.
 - __progress_bar__ (bool) – Folyamatjelző sáv megjelenítése tqdm és rich használatával.
 - __self__ (SelfBaseAlgoritm) –
 
-__Visszatér:__ a képzett modell
+__Visszatér:__ a képzett modell.
+
 __Visszatérés típusa:__ SelfBaseAlgoritm
+
+
+## classmethod __load__(path, env=None, device='auto', custom_objects=None, print_system_info=False, force_reset=True, **kwargs)
+
+Betölti a modellt egy zip-fájlból. Figyelmeztetés: a __load__ a semmiből újra létrehozza a modellt, nem frissíti a helyén! Helyi __load__ esetén használja helyette a __set_parameters__t.
+
+### Paraméterek:
+- __path__ (str | path | BufferedIOBase) – a fájl (vagy fájlszerű) elérési útja, ahonnan az ügynök betölthető
+- __env__ (Env | VecEnv | None) – a betöltött modell futtatására szolgáló új környezet (Nincs lehet, ha csak egy betanított modelltől van szüksége előrejelzésre) elsőbbséget élvez bármely mentett környezettel szemben.
+- __device__ (device | str) – Eszköz, amelyen a kódnak futnia kell.
+- __custom_objects__ (Dict[str, Any] | None) – A betöltéskor cserélendő objektumok szótára. Ha egy változó kulcsként szerepel ebben a szótárban, akkor az nem lesz deszerializálva, hanem a megfelelő elem kerül felhasználásra. Hasonló a custom_objects-hez a keras.models.load_model fájlban. Hasznos, ha olyan objektum van a fájlban, amelyet nem lehet deszerializálni.
+- __print_system_info__ (bool) – Kinyomtatja-e a rendszerinformációkat a mentett modellből és az aktuális rendszerinformációkat (hasznos a betöltési problémák elhárításához)
+- __force_reset__ (bool) – A __reset()__ hívás kényszerítése edzés előtt, hogy elkerülje a váratlan viselkedést. Lásd: https://github.com/DLR-RM/stable-baselines3/issues/597
+- __kwargs__ – extra argumentumok a modell megváltoztatásához betöltéskor
+
+Visszatér: új modellpéldány betöltött paraméterekkel
+
+Visszatérés típusa: SelfBaseAlgoritm
+
+## propertylogger: Logger
+Getter a logger objektumhoz
+
+## predict(observation, state=None, episode_start=None, deterministic=False)
+Beszerzi a házirend-műveletet egy megfigyelésből (és opcionálisan rejtett állapotból). Tartalmazza a cukorbevonatot a különböző megfigyelések kezelésére (például a képek normalizálására).
+
+### Paraméterek:
+- __observation__ (ndarray | Dict[str, ndarray]) – a bemeneti megfigyelés
+- __state__ (Tuple[ndarray, ...] | Nincs) – Az utolsó rejtett állapotok (Nincs lehet, az ismétlődő házirendekben használatos)
+- __episode_start__ (ndarray | Nincs) – Az utolsó maszkok (Nincs lehet, az ismétlődő házirendekben használatos) ez az epizódok kezdetének felel meg, ahol az RNN rejtett állapotait vissza kell állítani.
+- __deterministic__ (bool) – Változó arra, hogy visszaadja-e a determinisztikus műveleteket vagy sem.
+
+__Visszatér:__ a modell művelete és a következő rejtett állapot (ismétlődő szabályzatokban használatos)
+
+__Visszatérés típusa:__ Tuple[ndarray, Tuple[ndarray, …] | None]
+
+## save(path, exclude=None, include=None)

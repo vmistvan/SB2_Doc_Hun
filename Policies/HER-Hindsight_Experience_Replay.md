@@ -5,7 +5,7 @@ Korábbi Tapasztalatok Visszajátszása talán jobb, de meg kell kérdezni
 A HER egy olyan algoritmus, amely a szabályzaton kívüli (off-policy) módszerekkel működik (például DQN, SAC, TD3 és DDPG). A HER azt a tényt használja fel, hogy még ha egy kívánt célt nem is sikerült elérni, más célt is elérhettek a bevezetés során. „Virtuális” átmeneteket hoz létre azáltal, hogy átcímkézi a múltbeli epizódok átmeneteit (megváltoztatja a kívánt célt).
 Más megvalósításokhoz képest a jövőbeni célmintavételi stratégia inkluzív: a jelenlegi átmenet használható újramintavételezéskor. 
 
-##Példa
+## Példa
 Ez a példa csak a könyvtár és funkciói használatának bemutatására szolgál, és előfordulhat, hogy a trénelt ágensek nem oldják meg a környezeteket. Az optimalizált hiperparaméterek az RL Zoo repository-ban találhatók.
 
 <pre>

@@ -48,7 +48,7 @@ for_inrange(100):
 </pre>
 
 ## Reprodukálás:
-### beszerzés
+### Beszerzés
 git clone https://github.com/DLR-RM/rl-baselines3-zoo
 cd rl-baselines3-zoo/
 

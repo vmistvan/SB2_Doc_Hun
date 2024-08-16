@@ -1,7 +1,8 @@
 
 Visszatekintés Élmények visszajátszása - hát ez hülyeség.
 Szerintem a
-Korábbi Tapasztalatok Visszajátszása talán jobb, de meg kell kérdezni
+# HER - Hindsight_Experience_Replay - Korábbi Tapasztalatok Visszajátszása
+talán jobb, de meg kell kérdezni
 
 A HER egy olyan algoritmus, amely a szabályzaton kívüli (off-policy) módszerekkel működik (például DQN, SAC, TD3 és DDPG). A HER azt a tényt használja fel, hogy még ha egy kívánt célt nem is sikerült elérni, más célt is elérhettek a bevezetés során. „Virtuális” átmeneteket hoz létre azáltal, hogy átcímkézi a múltbeli epizódok átmeneteit (megváltoztatja a kívánt célt).
 Más megvalósításokhoz képest a jövőbeni célmintavételi stratégia inkluzív: a jelenlegi átmenet használható újramintavételezéskor. 

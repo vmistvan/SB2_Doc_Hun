@@ -82,18 +82,12 @@ A gSDE papír hiperparamétereit használtuk (a PyBullet envs-hez hangolva).
 A Gaussian azt jelenti, hogy a strukturálatlan Gauss-zajt használják a feltáráshoz, a gSDE-t (generalized State-Dependent Exploration) pedig egyébként.
 
 
-
-| Environments / Környezetek | A2C<br>Gaussian | A2C | PPO | PPO |
-			Gaussian		gSDE			Gaussian		gSDE
-
-HalfCheetah		2003 +/- 54		2032 +/- 122	1976 +/- 479	2826 +/- 45
-
-Ant			2286 +/- 72		2443 +/- 89		2364 +/- 120	2782 +/- 76
-
-Hopper		1627 +/- 158	1561 +/- 220	1567 +/- 339	2512 +/- 21
-
-Walker2D		577 +/- 65		839 +/- 56		1230 +/- 147	2019 +/- 64
-
+| Environments / Környezetek | A2C / Gau | A2C / gSDE | PPO / Gau | PPO / gSDE |
+| --- | --- | --- | --- | --- |
+| HalfCheetah | 2003 +/- 54 | 2032 +/- 122 | 1976 +/- 479 | 2826 +/- 45 |
+| Ant | 2286 +/- 72 | 2443 +/- 89 | 2364 +/- 120 | 2782 +/- 76 | 
+| Hopper | 1627 +/- 158 | 1561 +/- 220 | 1567 +/- 339 | 2512 +/- 21 |
+| Walker2D | 577 +/- 65 | 839 +/- 56 | 1230 +/- 147 | 2019 +/- 64 | 
 
 
 ## Hogyan lehet megismételni az eredményeket?
@@ -109,6 +103,8 @@ cd rl-baselines3-zoo/</pre>
 
 ### Ábrázolja az eredményeket (itt csak a PyBullet envs esetén):
 
-python scripts/all_plots.py -a a2c -e HalfCheetah Ant Hopper Walker2D -f logs/ -o logs/a2c_results
-python scripts/plot_from_file.py -i logs/a2c_results.pkl -latex -l A2C
+<pre>python scripts/all_plots.py -a a2c -e HalfCheetah Ant Hopper Walker2D -f logs/ -o logs/a2c_results
+python scripts/plot_from_file.py -i logs/a2c_results.pkl -latex -l A2C</pre>
+
+
 

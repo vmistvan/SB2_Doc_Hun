@@ -25,17 +25,17 @@ Gym spaces:
 | Dict | ❌ | ✔️ |
 
 
-Példa
+## Példa
 
 Ez a példa csak a könyvtár és funkciói használatának bemutatására szolgál, és előfordulhat, hogy a tréningezett ágensek nem oldják meg a környezeteket. Az optimalizált hiperparaméterek az RL Zoo repository-ban találhatók.
 
 Tanítson egy A2C ügynököt a CartPole-v1-en 4 környezet használatával.
 
-from stable_baselines3 import A2C
-from stable_baselines3.common.env_util import make_vec_env
+<pre>from stable_baselines3 import A2C
+from stable_baselines3.common.env_util import make_vec_env</pre>
 
-# Parallel environments
-vec_env = make_vec_env("CartPole-v1", n_envs=4)
+## Parallel environments
+<pre>vec_env = make_vec_env("CartPole-v1", n_envs=4)
 
 model = A2C("MlpPolicy", vec_env, verbose=1)
 model.learn(total_timesteps=25000)
@@ -50,12 +50,12 @@ while True:
     action, _states = model.predict(obs)
     obs, rewards, dones, info = vec_env.step(action)
     vec_env.render("human")
-
+</pre>
 
 Jegyzet:
 Az A2C-t elsősorban a CPU-n kell futtatni, különösen akkor, ha nem használ CNN-t. A CPU kihasználtságának javítása érdekében kapcsolja ki a GPU-t, és használja a SubprocVecEnv-t az alapértelmezett DummyVecEnv helyett:
 
-from stable_baselines3 import A2C
+<pre>from stable_baselines3 import A2C
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
@@ -64,27 +64,26 @@ if __name__=="__main__":
     model = A2C("MlpPolicy", env, device="cpu")
     model.learn(total_timesteps=25_000)
 
+</pre>
 
+## Eredmények
 
-
-
-Eredmények
-
-Atari játékok
+### Atari játékok
 
 A teljes tanulási görbék elérhetők a kapcsolódó PR #110-ben.
-PyBullet környezetek
+
+### PyBullet környezetek
 
 Eredmények a PyBullet benchmarkon (2 millió lépés) 6 mag használatával. A teljes tanulási görbék a kapcsolódó 48-as issueban érhetők el.
 
-Jegyzet:
+## Jegyzet:
 A gSDE papír hiperparamétereit használtuk (a PyBullet envs-hez hangolva).
 
 A Gaussian azt jelenti, hogy a strukturálatlan Gauss-zajt használják a feltáráshoz, a gSDE-t (generalized State-Dependent Exploration) pedig egyébként.
 
 
-Environments
-Környezetek		A2C			A2C			PPO			PPO
+
+| Environments / Környezetek | A2C<br>Gaussian | A2C | PPO | PPO |
 			Gaussian		gSDE			Gaussian		gSDE
 
 HalfCheetah		2003 +/- 54		2032 +/- 122	1976 +/- 479	2826 +/- 45
@@ -97,18 +96,18 @@ Walker2D		577 +/- 65		839 +/- 56		1230 +/- 147	2019 +/- 64
 
 
 
-Hogyan lehet megismételni az eredményeket?
+## Hogyan lehet megismételni az eredményeket?
 
-Az rl-zoo repo klónozása:
+### Az rl-zoo repo klónozása:
 
-git clone https://github.com/DLR-RM/rl-baselines3-zoo
-cd rl-baselines3-zoo/
+<pre>git clone https://github.com/DLR-RM/rl-baselines3-zoo
+cd rl-baselines3-zoo/</pre>
 
-Futtassa a benchmarkot (cserélje ki a $ENV_ID kódot a fent említett envs-re):
+### Futtassa a benchmarkot (cserélje ki a $ENV_ID kódot a fent említett envs-re):
 
-python train.py --algo a2c --env $ENV_ID --eval-episodes 10 --eval-freq 10000
+<pre>python train.py --algo a2c --env $ENV_ID --eval-episodes 10 --eval-freq 10000</pre>
 
-Ábrázolja az eredményeket (itt csak a PyBullet envs esetén):
+### Ábrázolja az eredményeket (itt csak a PyBullet envs esetén):
 
 python scripts/all_plots.py -a a2c -e HalfCheetah Ant Hopper Walker2D -f logs/ -o logs/a2c_results
 python scripts/plot_from_file.py -i logs/a2c_results.pkl -latex -l A2C

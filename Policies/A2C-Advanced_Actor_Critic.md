@@ -1,38 +1,32 @@
-
-
+# Leírás
 Az Asynchronous Advantage Actor Critic (A3C) szinkron, determinisztikus változata. Több dolgozót használ, hogy elkerülje a visszajátszási puffer használatát.
 
-Figyelem!
+## Figyelem!
 Ha az edzést instabilnak találja, vagy meg akarja felelni a stable-baselines A2C teljesítményének, fontolja meg a stable_baselines3.common.sb2_compat.rmsprop_tf_like RMSpropTFLike optimalizáló használatát. Az optimalizálót az A2C(policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))) segítségével módosíthatja. Bővebben itt. 
 
+## Jegyzetek
+- Eredeti dokumentáció: https://arxiv.org/abs/1602.01783
+- OpenAI blog post: https://openai.com/blog/baselines-acktr-a2c/
 
+## Tudom használni?
 
-Jegyzetek
+- Recurrent policies: ❌
 
-    Eredeti dokumentáció: https://arxiv.org/abs/1602.01783
+- Multi processing: ✔️
 
-    OpenAI blog post: https://openai.com/blog/baselines-acktr-a2c/
+Gym spaces:
 
-
-Tudom használni?
-
-    Recurrent policies: ❌
-
-    Multi processing: ✔️
-
-    Gym spaces:
-
-Space			Action		Observation
-
-Discrete		✔️			✔️
-
-Box			✔️			✔️
-
-MultiDiscrete	✔️			✔️
-
-MultiBinary		✔️			✔️
-
-Dict			❌			✔️
+| Space	| Action | Observation |
+| --- | --- | --- |
+| Discrete | ✔️ | ✔️ |
+| --- | --- | --- |
+| Box | ✔️ | ✔️ |
+| --- | --- | --- |
+| MultiDiscrete | ✔️ | ✔️ |
+| --- | --- | --- |
+| MultiBinary | ✔️ | ✔️ |
+| --- | --- | --- |
+| Dict | ❌ | ✔️ |
 
 
 Példa

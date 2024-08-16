@@ -19,13 +19,9 @@ Gym spaces:
 | Space	| Action | Observation |
 | --- | --- | --- |
 | Discrete | ✔️ | ✔️ |
-| --- | --- | --- |
 | Box | ✔️ | ✔️ |
-| --- | --- | --- |
 | MultiDiscrete | ✔️ | ✔️ |
-| --- | --- | --- |
 | MultiBinary | ✔️ | ✔️ |
-| --- | --- | --- |
 | Dict | ❌ | ✔️ |
 
 

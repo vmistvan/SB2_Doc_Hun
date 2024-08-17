@@ -2,7 +2,7 @@
 ### A Stable Baselines dokumentációjának magyar fordítása
 ## Stable-Baselines3 Docs - Megbízható Reinforcement Learning Implementaciók
 
-A Stable Baselines3 (SB3) a megbízható implementaciók készlete a reinforcement learning algoritmusoknak __PyTorch__ban. Ez a következő next major versiója a __Stable Baselines__nak.
+A Stable Baselines3 (SB3) a megbízható implementaciók készlete a reinforcement learning algoritmusoknak __PyTorch__ ban. Ez a következő next major versiója a __Stable Baselines__ nak.
 
 Github repository: https://github.com/DLR-RM/stable-baselines3
 

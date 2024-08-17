@@ -31,9 +31,9 @@ Ezért nagyon ajánljuk, hogy vessen egy pillantást az [RL zoo-ra](https://gith
 Amikor az RL-t egyéni problémára alkalmazza, mindig normalizálja az ügynök bemenetét (például a VecNormalize használatával PPO/A2C-hez), és nézze meg a más környezetekben végzett általános előfeldolgozást (például Atari, frame-stack stb.). Az egyéni környezetekkel kapcsolatos további tanácsokért olvassa el a __Tippek és trükkök - egyedi környezet létrehozása__ című részt az egyéni környezet létrehozásakor.
 
 ## Az RL jelenlegi korlátai
-Tisztában kell lennie a megerősítő tanulás jelenlegi korlátaival.
+Tisztában kell lennie a megerősítő tanulás jelenlegi [korlátaival](https://www.alexirpan.com/2018/02/14/rl-hard.html).
 
-A modell nélküli RL algoritmusok (azaz az SB-ben megvalósított összes algoritmus) általában nem hatékonyak a mintavételezésben. Sok mintára van szükségük (néha milliónyi interakcióra), hogy megtanuljanak valami hasznosat. Ezért a legtöbb sikert az RL-ben játékokon vagy csak szimulációban érte el. Például az ETH Zurich ebben a munkájában az ANYmal robotot csak szimulációra képezték ki, majd a való világban tesztelték.
+A modell nélküli RL algoritmusok (azaz az SB-ben megvalósított összes algoritmus) általában nem hatékonyak a mintavételezésben. Sok mintára van szükségük (néha milliónyi interakcióra), hogy megtanuljanak valami hasznosat. Ezért a legtöbb sikert az RL-ben játékokon vagy csak szimulációban érte el. Például az ETH Zurich [ebben a munkájában](https://www.youtube.com/watch?v=aTDkYFZFWug) az ANYmal robotot csak szimulációra képezték ki, majd a való világban tesztelték.
 
 Általános tanácsként a jobb teljesítmény elérése érdekében növelni kell az ügynök költségvetését (a képzési időlépések számát).
 

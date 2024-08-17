@@ -2,14 +2,14 @@
 ### A Stable Baselines dokumentációjának magyar fordítása
 ## Stable-Baselines3 Docs - Megbízható Reinforcement Learning Implementaciók
 
-A Stable Baselines3 (SB3) a megbízható implementaciók készlete a reinforcement learning algoritmusoknak __PyTorch__ ban. Ez a következő major verziója a <b>Stable Baselines</b>nak.
+A Stable Baselines3 (SB3) a megbízható implementaciók készlete a reinforcement learning algoritmusoknak <b>PyTorch</b>ban. Ez a következő major verziója a <b>Stable Baselines</b>nak.
 
 Github repository: https://github.com/DLR-RM/stable-baselines3
 
-Paper: https://jmlr.org/papers/volume22/20-1364/20-1364.pdf
+Dokumentáció: https://jmlr.org/papers/volume22/20-1364/20-1364.pdf
 
-RL Baselines3 Zoo (training framework for SB3): https://github.com/DLR-RM/rl-baselines3-zoo
+RL Baselines3 Zoo (training framework az SB3-hoz): https://github.com/DLR-RM/rl-baselines3-zoo
 
-RL Baselines3 Zoo provides a collection of pre-trained agents, scripts for training, evaluating agents, tuning hyperparameters, plotting results and recording videos.
+RL Baselines3 Zoo az előre tréningezett agentek, szkriptek a tréninghez, értékelő agentek, hyperparameterek tuningolása, eredmények kinyomtatása és videók rögzítése.
 
-SB3 Contrib (experimental RL code, latest algorithms): https://github.com/Stable-Baselines-Team/stable-baselines3-contrib
+SB3 kontribúció (kísérleti RL kód, legújabb algoritmusok): https://github.com/Stable-Baselines-Team/stable-baselines3-contrib

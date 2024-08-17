@@ -1,4 +1,4 @@
-# SB2_Doc_Hun
+# SB3_Doc_Hun
 ### A Stable Baselines dokumentációjának magyar fordítása
 ## Stable-Baselines3 Docs - Megbízható Reinforcement Learning Implementaciók
 

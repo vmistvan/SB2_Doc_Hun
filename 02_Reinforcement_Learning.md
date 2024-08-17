@@ -37,9 +37,14 @@ A modell nélküli RL algoritmusok (azaz az SB-ben megvalósított összes algor
 
 Általános tanácsként a jobb teljesítmény elérése érdekében növelni kell az ügynök költségvetését (a képzési időlépések számát).
 
-A kívánt viselkedés eléréséhez gyakran szakértői tudásra van szükség a megfelelő jutalmazási funkció kialakításához. Ez a jutalomfejlesztés (vagy a Freek Stulp által megalkotott RewArt) több iterációt tesz szükségessé. A jutalom alakításának jó példájaként megtekintheti a Deep Mimic papírt, amely az imitációs tanulást és a megerősítő tanulást ötvözi az akrobatikus mozdulatok elvégzéséhez.
+A kívánt viselkedés eléréséhez gyakran szakértői tudásra van szükség a megfelelő jutalmazási funkció kialakításához. Ez a jutalomfejlesztés (vagy a [Freek Stulp](http://www.freekstulp.net/) által megalkotott RewArt) több iterációt tesz szükségessé. A jutalom alakításának jó példájaként megtekintheti a [Deep Mimic papírt](https://xbpeng.github.io/projects/DeepMimic/index.html), amely az imitációs tanulást és a megerősítő tanulást ötvözi az akrobatikus mozdulatok elvégzéséhez.
 
 Az RL utolsó korlátja az edzés instabilitása. Vagyis edzés közben hatalmas teljesítménycsökkenést figyelhetünk meg. Ez a viselkedés különösen jelen van a DDPG-ben, ezért a TD3 kiterjesztése megpróbálja megoldani ezt a problémát. Más módszerek, például a TRPO vagy a PPO, megbízható régiót használnak a probléma minimalizálására a túl nagy frissítés elkerülésével.
 
 
+## Hogyan kell kiértékelni egy RL algoritmust?
 
+## Jegyzet
+__Ügynöke kiértékelésekor és az eredmények összehasonlításakor mások eredményeivel fordítson figyelmet a enviroment wrapper-ekre. Az epizódjutalmak vagy az epizódok hosszának módosítása szintén befolyásolhatja az értékelési eredményeket, ami nem feltétlenül kívánatos. Tekintse meg az assessment_policy helper funkciót az Evaluation Helper részben.__
+
+Mivel a legtöbb algoritmus felderítési zajt használ a képzés során, külön tesztkörnyezetre van szükség az ügynök teljesítményének adott időpontban történő értékeléséhez. Javasoljuk, hogy rendszeres időközönként értékelje ügynökét n tesztepizódra vonatkozóan (n általában 5 és 20 között van), és az epizódonkénti jutalmat átlagolja a jó becslés érdekében.

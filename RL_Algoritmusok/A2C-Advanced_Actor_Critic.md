@@ -2,7 +2,7 @@
 Az Asynchronous Advantage Actor Critic (A3C) szinkron, determinisztikus változata. Több dolgozót használ, hogy elkerülje a visszajátszási puffer használatát.
 
 ## Figyelem!
-Ha az edzést instabilnak találja, vagy meg akarja felelni a stable-baselines A2C teljesítményének, fontolja meg a stable_baselines3.common.sb2_compat.rmsprop_tf_like RMSpropTFLike optimalizáló használatát. Az optimalizálót az A2C(policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))) segítségével módosíthatja. Bővebben itt. 
+Ha az edzést instabilnak találja, vagy meg akarja feleltetni a stable-baselines A2C teljesítményének, fontolja meg a stable_baselines3.common.sb2_compat.rmsprop_tf_like RMSpropTFLike optimalizáló használatát. Az optimalizálót az A2C(policy_kwargs=dict(optimizer_class=RMSpropTFLike, optimizer_kwargs=dict(eps=1e-5))) segítségével módosíthatja. Bővebben itt. 
 
 ## Jegyzetek
 - Eredeti dokumentáció: https://arxiv.org/abs/1602.01783

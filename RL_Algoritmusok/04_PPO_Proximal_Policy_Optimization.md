@@ -71,44 +71,15 @@ A Gaussian azt jelenti, hogy a strukturálatlan Gauss-zajt használják a feltá
 | Környezetek | A2C | A2C | PPO | PPO |
 | --- | --- | --- | --- | --- |
 | | Gauss-féle | gSDE | Gauss-féle | gSDE |
-| --- | --- | --- | --- | --- |
-| HalfCheetah | 2003 +/- 54 | 2032 +/- 122 |
-1976 +/- 479
+| HalfCheetah | 2003 +/- 54 | 2032 +/- 122 | 1976 +/- 479 | 2826 +/- 45 |
+| Ant | 2286 +/- 72 | 2443 +/- 89 | 2364 +/- 120 | 2782 +/- 76- |
+| Hopper | 1627 +/- 158 | 1561 +/- 220 | 1567 +/- 339 | 2512 +/- 21 |
+| Walker2D | 577 +/- 65 | 839 +/- 56 | 1230 +/- 147 | 2019 +/- 64 |
 
-2826 +/- 45
-
-Ant
-
-2286 +/- 72
-
-2443 +/- 89
-
-2364 +/- 120
-
-2782 +/- 76
-
-Hopper
-
-1627 +/- 158
-
-1561 +/- 220
-
-1567 +/- 339
-
-2512 +/- 21
-
-Walker2D
-
-577 +/- 65
-
-839 +/- 56
-
-1230 +/- 147
-
-2019 +/- 64
-
-Hogyan lehet megismételni az eredményeket?
+Hogyan lehet megismételni az eredményeket?
 Az rl-zoo repo klónozása:
 
-git klón https://github.com/DLR-RM/rl-baselines3-zoo
-cd rl-baselines3-zoo/
+<pre>git clone https://github.com/DLR-RM/rl-baselines3-zoo
+cd rl-baselines3-zoo/</pre>
+
+

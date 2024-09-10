@@ -18,7 +18,8 @@ __A PPO számos, az OpenAI által nem dokumentált módosítást tartalmaz az er
 
 ### Jegyzet
 __A PPO visszatérő verziója elérhető a hozzájárulási tárunkban: https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html
-Azt tanácsoljuk azonban a felhasználóknak, hogy kezdjék az egyszerű képkocka-halmozással (frame-stacking), mint egyszerűbb, gyorsabb és általában versenyképes alternatívával. További információ a jelentésünkben: https://wandb.ai/sb3/no-vel-envs/reports/PPO-vs-RecurrentPPO -aka-PPO-LSTM-on-environments-with-masked-velocity-VmlldzoxOTI4NjE4 Lásd még: Procgen papírmelléklet 11. ábra. A gyakorlatban több megfigyelést is egymásra halmozhat a VecFrameStack segítségével.__
+Azt tanácsoljuk azonban a felhasználóknak, hogy kezdjék az egyszerű képkocka-halmozással (frame-stacking), mint egyszerűbb, gyorsabb és általában versenyképes alternatívával. További információ a jelentésünkben:
+https://wandb.ai/sb3/no-vel-envs/reports/PPO-vs-RecurrentPPO -aka-PPO-LSTM-on-environments-with-masked-velocity-VmlldzoxOTI4NjE4 Lásd még: Procgen papírmelléklet 11. ábra. A gyakorlatban több megfigyelést is egymásra halmozhat a VecFrameStack segítségével.__
 
 | Space | Action | Observation |
 | --- | --- | --- |
@@ -58,7 +59,56 @@ while True:
 
 ## Eredmények
 ### Atari Games
-A teljes tanulási görbék elérhetők a kapcsolódó PR #110-ben.
+A teljes tanulási görbék elérhetők a [kapcsolódó PR #110-ben](https://github.com/DLR-RM/stable-baselines3/pull/110).
 
 ### PyBullet környezetek
 Eredmények a PyBullet benchmarkon (2 millió lépés) 6 mag használatával. A teljes tanulási görbék a kapcsolódó 48-as számban érhetők el.
+
+### Jegyzet
+__A gSDE papír hiperparamétereit használtuk (a PyBullet envs-hez hangolva).__
+A Gaussian azt jelenti, hogy a strukturálatlan Gauss-zajt használják a feltáráshoz, a gSDE-t (generalized State-Dependent Exploration) pedig egyébként.
+
+| Környezetek | A2C | A2C | PPO | PPO |
+| --- | --- | --- | --- | --- |
+| | Gauss-féle | gSDE | Gauss-féle | gSDE |
+| --- | --- | --- | --- | --- |
+| HalfCheetah | 2003 +/- 54 | 2032 +/- 122 |
+1976 +/- 479
+
+2826 +/- 45
+
+Ant
+
+2286 +/- 72
+
+2443 +/- 89
+
+2364 +/- 120
+
+2782 +/- 76
+
+Hopper
+
+1627 +/- 158
+
+1561 +/- 220
+
+1567 +/- 339
+
+2512 +/- 21
+
+Walker2D
+
+577 +/- 65
+
+839 +/- 56
+
+1230 +/- 147
+
+2019 +/- 64
+
+Hogyan lehet megismételni az eredményeket?
+Az rl-zoo repo klónozása:
+
+git klón https://github.com/DLR-RM/rl-baselines3-zoo
+cd rl-baselines3-zoo/

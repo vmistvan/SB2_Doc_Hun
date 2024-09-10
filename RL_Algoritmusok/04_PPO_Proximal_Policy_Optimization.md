@@ -146,7 +146,7 @@ A PPO bemutatása: https://spinningup.openai.com/en/latest/algorithms/ppo.html
 
 - seed (int | None) – Seed a pszeudo véletlen generátorokhoz
 
-device (device | str) – Eszköz (cpu, cuda, …), amelyen a kódot le kell futtatni. Automatikusra állítva a kód a GPU-n fut le, ha lehetséges.
+- device (device | str) – Eszköz (cpu, cuda, …), amelyen a kódot le kell futtatni. Automatikusra állítva a kód a GPU-n fut le, ha lehetséges.
 
 - _init_setup_model (bool) – Függetlenül attól, hogy ki kell-e építeni a hálózatot a példány létrehozásakor vagy sem.
 

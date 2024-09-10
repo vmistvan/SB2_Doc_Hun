@@ -110,7 +110,7 @@ A PPO bemutatása: https://spinningup.openai.com/en/latest/algorithms/ppo.html
 
 - n_epochs (int) – A korszak száma a helyettesítő veszteség optimalizálásakor
 
-- gamma (úszó) – Kedvezménytényező
+- gamma (float) – Kedvezménytényező
 
 - gae_lambda (float) – A torzítás és a variancia kompromisszumos tényezője az Általános Előny Becslőnél
 

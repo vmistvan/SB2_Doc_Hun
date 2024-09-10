@@ -1,6 +1,6 @@
 # PPO - Proximal Policy Optimization
 
-A Proximal Policy Optimization algoritmus egyesíti az A2C (több dolgozóval) és a TRPO (bizalmi régiót használ a aktor fejlesztésére) ötleteit.
+A Proximal Policy Optimization algoritmus egyesíti az A2C (több dolgozóval) és a TRPO (bizalmi régiót használ az aktor fejlesztésére) ötleteit.
 
 A fő gondolat az, hogy a frissítés után az új irányelv ne legyen túl távol a régi irányelvtől. Ehhez a ppo kivágást (clipping) használ, hogy elkerülje a túl nagy frissítést.
 

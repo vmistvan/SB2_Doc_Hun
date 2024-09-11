@@ -79,3 +79,20 @@ A < 0
 1. ábra: Az LCLIP helyettesítő függvény egy tagját (azaz egyetlen időlépést) ábrázoló diagramok az r valószínűségi arány függvényében, pozitív előnyök (balra) és negatív előnyök (jobb oldala) esetén. Az egyes diagramokon lévő piros kör az optimalizálás kiindulópontját mutatja, azaz r = 1. Vegye figyelembe, hogy az LCLIP ezek közül a kifejezések közül sokat összegez.
 
 A 2. ábra egy másik intuíciós forrást ad az LCLIP helyettesítő objektívvel kapcsolatban. Megmutatja, hogy számos célkitűzés hogyan változik, ahogyan a házirend-frissítési irány mentén interpolálunk, amelyet a proximális házirend-optimalizálással (az algoritmus, amelyet hamarosan bemutatunk) kapunk egy folyamatos ellenőrzési problémára. Láthatjuk, hogy az LCLIP az LCP I alsó korlátja, és büntetés jár a túl nagy házirend-frissítésért.
+
+2. ábra: Helyettesítő célok, amikor interpolálunk a kezdeti θold házirend-paraméter és a frissített házirend-paraméter között, amelyet a PPO egy iterációja után számítunk ki. A frissített házirend KL eltérése körülbelül 0,02 a kezdeti házirendhez képest, és ez az a pont, ahol az LCLIP maximális. Ez a diagram megfelel a Hopper-v1 probléma első házirend-frissítésének, a 6.1. szakaszban megadott hiperparaméterek használatával.
+
+## 4 Adaptív KL büntetési együttható
+Egy másik megközelítés, amely a kivágott helyettesítő célkitűzés alternatívájaként, vagy mellette használható, az, hogy a KL divergenciára büntetést alkalmazunk, és a büntetési együtthatót úgy adaptáljuk, hogy elérjük a KL divergencia dtarg valamilyen célértékét. politika frissítése. Kísérleteink során azt találtuk, hogy a KL-büntetés rosszabbul teljesített, mint a kivágott helyettesítő objektív, azonban ide soroltuk, mert ez egy fontos alapérték.
+Ennek az algoritmusnak a legegyszerűbb példányában a következő lépéseket hajtjuk végre minden házirend-frissítésnél:
+• Több korszaknyi minibatch SGD használatával optimalizálja a KL-büntetett objektívet
+
+(8)
+• Számítsa ki d = ˆEt[KL[πθold (· | st), πθ(· | st)]]
+– Ha d < dtarg/1,5, β ← β/2
+– Ha d > dtarg × 1,5, β ← β × 2
+A frissített β-t a rendszer a következő házirend-frissítéshez használja. Ezzel a sémával időnként láthatunk olyan házirend-frissítéseket, ahol a KL eltérés jelentősen eltér a dtarg-tól, azonban ezek ritkák, és a β gyorsan alkalmazkodik. A fenti 1.5 és 2 paramétereket heurisztikusan választottuk, de az algoritmus nem túl érzékeny rájuk. A β kezdeti értéke egy másik hiperparaméter, de a gyakorlatban nem fontos, mert az algoritmus gyorsan módosítja.
+
+## 5 Algoritmus
+Az előző szakaszok helyettesítő veszteségei kiszámíthatók és megkülönböztethetők egy tipikus politikai gradiens implementáció kisebb változtatásával. Az automatikus differenciálást használó megvalósításoknál egyszerűen meg kell alkotni az LCLIP vagy LKLP EN veszteséget az LP G helyett, és több lépésben sztochasztikus gradiens emelkedést kell végrehajtani ezen a célon.
+

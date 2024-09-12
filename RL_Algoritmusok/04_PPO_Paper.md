@@ -138,19 +138,24 @@ Az eredményeket az 1. táblázat mutatja. Megjegyzendő, hogy a pontszám negat
 ## 6.2 Összehasonlítás a folyamatos tartomány más algoritmusaival
 Ezután összehasonlítjuk a PPO-t (a 3. szakasz „kivágott” helyettesítő célkitűzésével) számos más szakirodalmi módszerrel, amelyeket folyamatos problémák esetén hatékonynak tartanak. Összehasonlítottuk a következő algoritmusok hangolt implementációival: bizalmi régió politika optimalizálása [Sch+15b], keresztentrópia módszer (CEM) [SL06], vanília politika gradiens adaptív lépésmérettel3, A2C [Mni+16], A2C bizalmi régióval [ Wan+16]. Az A2C az előny aktor kritikus rövidítése, és az A3C szinkron változata, amelyről azt találtuk, hogy ugyanolyan vagy jobb teljesítményt nyújt, mint az aszinkron verzió. A PPO-hoz az előző szakasz hiperparamétereit használtuk, ahol = 0,2. Azt látjuk, hogy a PPO szinte minden folyamatos vezérlési környezetben felülmúlja az előző módszereket.
 
+
  ![image](./img/abra3.PNG)
+ 
 3. ábra: Több algoritmus összehasonlítása több MuJoCo környezetben, egymillió időlépésre való betanítás.
 
 ## 6.3 Bemutató a folyamatos tartományban: Humanoid futás és kormányzás
 Annak érdekében, hogy bemutassuk a PPO teljesítményét a nagy dimenziós folyamatos vezérlési problémákkal kapcsolatban, egy 3D-s humanoidot magában foglaló feladatsoron edzünk, ahol a robotnak futnia, kormányoznia kell, és fel kell kelnie a földről, esetleg miközben kockák dobálják. Az általunk tesztelt három feladat a következő: (1) RoboschoolHumanoid: csak előrefelé történő mozgás, (2) RoboschoolHumanoidFlagrun: a célpont helyzete véletlenszerűen változik 200 lépésenként, vagy amikor elérjük a célt, (3) RoboschoolHumanoidFlagrunHarder, ahol a robotot kockákkal dobálják és fel kell kelnie a földről. Lásd az 5. ábrát egy tanult irányelv állóképeinek megjelenítéséhez, és a 4. ábrán a három feladat tanulási görbéiért. A hiperparamétereket a 4. táblázat tartalmazza. Egyidejű munkában Heess et al. [Hee+17] a PPO adaptív KL-változatát (4. szakasz) használta a 3D-s robotok helyváltoztatási irányelveinek megismerésére.
 
+
 ![image](./img/abra4.PNG)
  
 4. ábra: Learning curves from PPO on 3D humanoid control tasks, using Roboschool.
 
+
 ![image](./img/abra5.PNG)
 
 5. ábra: A RoboschoolHumanoidFlagrun-tól tanult házirend állókép-keretei. Az első hat képkockában a robot egy cél felé fut. Ezután a pozíció véletlenszerűen megváltozik, és a robot megfordul, és az új cél felé fut.
+
 
 ### 6.4 Összehasonlítás más algoritmusokkal az Atari tartományban
 A PPO-t az Arcade Learning Environment [Bel+15] benchmarkon is futtattuk, és összehasonlítottuk az A2C [Mni+16] és az ACER [Wan+16] jól hangolt implementációival. Mindhárom algoritmus esetében ugyanazt a házirend-hálózati architektúrát használtuk, mint az [Mni+16]-ban. A PPO hiperparamétereit az 5. táblázat tartalmazza. A másik két algoritmushoz olyan hiperparamétereket használtunk, amelyeket úgy hangoltunk, hogy maximalizáljuk a teljesítményt ezen a referenciaértéken.

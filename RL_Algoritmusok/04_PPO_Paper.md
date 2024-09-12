@@ -151,9 +151,10 @@ Annak érdekében, hogy bemutassuk a PPO teljesítményét a nagy dimenziós fol
 A PPO-t az Arcade Learning Environment [Bel+15] benchmarkon is futtattuk, és összehasonlítottuk az A2C [Mni+16] és az ACER [Wan+16] jól hangolt implementációival. Mindhárom algoritmus esetében ugyanazt a házirend-hálózati architektúrát használtuk, mint az [Mni+16]-ban. A PPO hiperparamétereit az 5. táblázat tartalmazza. A másik két algoritmushoz olyan hiperparamétereket használtunk, amelyeket úgy hangoltunk, hogy maximalizáljuk a teljesítményt ezen a referenciaértéken.
 Az eredmények és a tanulási görbék táblázata mind a 49 játékra vonatkozóan a B. függelékben található. A következő két pontozási mutatót vesszük figyelembe: (1) epizódonkénti átlagos jutalom a teljes edzési időszak alatt (ami a gyors tanulást segíti elő), és (2) átlagos jutalom per epizód. epizód az edzés utolsó 100 epizódjából (ami kedvez a végső teljesítménynek). A 2. táblázat az egyes algoritmusok által „nyert” játékok számát mutatja, ahol a győztest úgy számítjuk ki, hogy a három próba pontozási mutatóját átlagoljuk.
 
-A2C ACER PPO Tie
-(1) avg. episode reward over all of training 1 18 30 0
-(2) avg. episode reward over last 100 episodes 1 28 19 1
+| | A2C | ACER | PPO | Tie |
+| --- | --- | --- | --- | --- |
+| (1) avg. episode reward over all of training | 1 | 18 | 30 | 0 |
+| (2) avg. episode reward over last 100 episodes | 1 | 28 | 19 | 1 |
 2. táblázat: Az egyes algoritmusok által „nyert” játékok száma, ahol a pontozási mutatót három próba átlaga alapján számítják ki.
 
 ## 7 Következtetés
@@ -163,7 +164,7 @@ Bevezettük a proximális házirend-optimalizálást, a házirend-optimalizálá
 Köszönet Rocky Duannak, Peter Chennek és másoknak az OpenAI-nál az éleslátó megjegyzésekért.
 
 ## References
-[Bel+15] M. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. “The arcade learning environment: An evaluation platform for general agents”. In: Twenty-Fourth International Joint Conference on Artificial Intelligence. 2015.
+<pre>[Bel+15] M. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. “The arcade learning environment: An evaluation platform for general agents”. In: Twenty-Fourth International Joint Conference on Artificial Intelligence. 2015.
 [Bro+16] G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba. “OpenAI Gym”. In: arXiv preprint arXiv:1606.01540 (2016).
 [Dua+16] Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel. “Benchmarking Deep Reinforcement Learning for Continuous Control”. In: arXiv preprint arXiv:1604.06778 (2016).
 [Hee+17] N. Heess, S. Sriram, J. Lemmon, J. Merel, G. Wayne, Y. Tassa, T. Erez, Z. Wang, A. Eslami, M. Riedmiller, et al. “Emergence of Locomotion Behaviours in Rich Environments”. In: arXiv preprint arXiv:1707.02286 (2017).
@@ -176,7 +177,43 @@ Köszönet Rocky Duannak, Peter Chennek és másoknak az OpenAI-nál az éleslá
 [SL06] I. Szita and A. L¨orincz. “Learning Tetris using the noisy cross-entropy method”. In: Neural computation 18.12 (2006), pp. 2936–2941.
 [TET12] E. Todorov, T. Erez, and Y. Tassa. “MuJoCo: A physics engine for model-based control”. In: Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on. IEEE. 2012, pp. 5026–5033.
 [Wan+16] Z. Wang, V. Bapst, N. Heess, V. Mnih, R. Munos, K. Kavukcuoglu, and N. de Freitas. “Sample Efficient Actor-Critic with Experience Replay”. In: arXiv preprint arXiv:1611.01224 (2016).
-[Wil92] R. J. Williams. “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. In: Machine learning 8.3-4 (1992), pp. 229–256.
+[Wil92] R. J. Williams. “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. In: Machine learning 8.3-4 (1992), pp. 229–256.</pre>
 
+## A Hyperparameters
+
+Hyperparameter | Value
+--- | ---
+Horizon (T) | 2048
+Adam stepsize | 3 × 10−4
+Num. epochs | 10
+Minibatch size | 64
+Discount (γ) | 0.99
+GAE parameter (λ) | 0.95
+Table 3: PPO hyperparameters used for the Mujoco 1 million timestep benchmark.
+
+Hyperparameter Value
+Horizon (T) 512
+Adam stepsize ∗
+Num. epochs 15
+Minibatch size 4096
+Discount (γ) 0.99
+GAE parameter (λ) 0.95
+Number of actors 32 (locomotion), 128 (flagrun)
+Log stdev. of action distribution LinearAnneal(−0.7, −1.6)
+Table 4: PPO hyperparameters used for the Roboschool experiments. Adam stepsize was adjusted based on
+the target value of the KL divergence.
+Hyperparameter Value
+Horizon (T) 128
+Adam stepsize 2.5 × 10−4 × α
+Num. epochs 3
+Minibatch size 32 × 8
+Discount (γ) 0.99
+GAE parameter (λ) 0.95
+Number of actors 8
+Clipping parameter  0.1 × α
+VF coeff. c1 (9) 1
+Entropy coeff. c2 (9) 0.01
+Table 5: PPO hyperparameters used in Atari experiments. α is linearly annealed from 1 to 0 over the course
+of learning.
 
 

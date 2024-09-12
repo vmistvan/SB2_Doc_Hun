@@ -8,13 +8,13 @@
 ### {joschu, filip, prafulla, alec, oleg}@openai.com
 
 ## Abstract
-A megerősítő tanuláshoz a politika gradiens módszereinek új családját javasoljuk, amelyek váltakoznak az adatok mintavétele között a környezettel való interakción keresztül, és a „helyettesítő” célfüggvény optimalizálása között sztochasztikus gradiens emelkedés segítségével. Míg a szabványos házirend gradiens módszerek adatmintánként egy gradiens frissítést hajtanak végre, egy új célfüggvényt javasolunk, amely lehetővé teszi a minibatch frissítések több korszakát. Az új módszerek, amelyeket proximális politikaoptimalizálásnak (PPO) nevezünk, rendelkeznek a bizalmi régió politika optimalizálásának előnyeivel.
+A megerősítő tanuláshoz a házirend gradiens módszereinek új családját javasoljuk, amelyek váltakoznak az adatok mintavétele között a környezettel való interakción keresztül, és a „helyettesítő” célfüggvény optimalizálása között sztochasztikus gradiens emelkedés segítségével. Míg a szabványos házirend gradiens módszerek adatmintánként egy gradiens frissítést hajtanak végre, egy új célfüggvényt javasolunk, amely lehetővé teszi a minibatch frissítések több korszakát. Az új módszerek, amelyeket proximális házirendoptimalizálásnak (PPO - Proximal Policy Optimization) nevezünk, rendelkeznek a bizalmi régió házirend optimalizálásának előnyeivel.
 tion (TRPO), de sokkal egyszerűbb a megvalósításuk, általánosabbak és jobb a minta összetettsége (empirikusan). Kísérleteink a PPO-t benchmark feladatok gyűjteményén tesztelik, beleértve a szimulált robotmozgást és az Atari-játékokat, és megmutatjuk, hogy a PPO felülmúlja a többi online irányelv gradiens módszerét, és összességében kedvező egyensúlyt talál a minta összetettsége, egyszerűsége és a fali idő között.
 
 ## 1 Bevezetés
-Az elmúlt években számos különböző megközelítést javasoltak a neurális hálózati függvény közelítőkkel történő megerősítő tanulásra. A vezető versenyzők a mély Q-learning [Mni+15], a „vanília” politikai gradiens módszerek [Mni+16] és a bizalmi régió/természetpolitikai gradiens módszerek [Sch+15b]. Van azonban még mit javítani egy olyan módszer kifejlesztésében, amely méretezhető (nagy modellekre és párhuzamos implementációkra), adathatékony és robusztus (vagyis hiperparaméterek hangolása nélkül is sikeres számos probléma esetén). A Q-learning (függvényközelítéssel) sok egyszerű problémában kudarcot vall1, és kevéssé érthető, a vanília politikai gradiens módszerek gyenge adathatékonysággal és robusztussággal rendelkeznek; és a bizalmi régió házirend-optimalizálása (TRPO) viszonylag bonyolult, és nem kompatibilis azokkal az architektúrákkal, amelyek zajt (például lemorzsolódást) vagy paramétermegosztást (a házirend és az érték függvény között, vagy segédfeladatokat) tartalmaznak.
+Az elmúlt években számos különböző megközelítést javasoltak a neurális hálózati függvény közelítőkkel történő megerősítő tanulásra. A vezető versenyzők a mély Q-learning [Mni+15], a „vanília” házirendi gradiens módszerek [Mni+16] és a bizalmi régió/természetházirendi gradiens módszerek [Sch+15b]. Van azonban még mit javítani egy olyan módszer kifejlesztésében, amely méretezhető (nagy modellekre és párhuzamos implementációkra), adathatékony és robusztus (vagyis hiperparaméterek hangolása nélkül is sikeres számos probléma esetén). A Q-learning (függvényközelítéssel) sok egyszerű problémában kudarcot vall1, és kevéssé érthető, a vanília házirendi gradiens módszerek gyenge adathatékonysággal és robusztussággal rendelkeznek; és a bizalmi régió házirend-optimalizálása (TRPO) viszonylag bonyolult, és nem kompatibilis azokkal az architektúrákkal, amelyek zajt (például lemorzsolódást) vagy paramétermegosztást (a házirend és az érték függvény között, vagy segédfeladatokat) tartalmaznak.
 Ez a cikk a jelenlegi állapot javítására törekszik egy olyan algoritmus bevezetésével, amely eléri a TRPO adathatékonyságát és megbízható teljesítményét, miközben csak elsőrendű optimalizálást alkalmaz.
-Új célt javasolunk levágott valószínűségi mutatókkal, amely pesszimista becslést (azaz alsó korlátot) képez a politika teljesítményére vonatkozóan. A házirendek optimalizálása érdekében felváltva mintavételezzük a házirendből származó adatokat, és több optimalizálási időszakot is végrehajtunk a mintavételezett adatokon.
+Új célt javasolunk levágott valószínűségi mutatókkal, amely pesszimista becslést (azaz alsó korlátot) képez a házirend teljesítményére vonatkozóan. A házirendek optimalizálása érdekében felváltva mintavételezzük a házirendből származó adatokat, és több optimalizálási időszakot is végrehajtunk a mintavételezett adatokon.
 Kísérleteink összehasonlítják a helyettesítő cél különböző változatainak teljesítményét, és azt találták, hogy a vágott valószínűségi arányokkal rendelkező verzió teljesít a legjobban. Összehasonlítjuk a PPO-t számos korábbi irodalmi algoritmussal is. A folyamatos vezérlési feladatoknál jobban teljesít, mint az általunk összehasonlítható algoritmusok. Atari-n lényegesen jobban teljesít (a minta összetettségét tekintve), mint az A2C, és hasonlóan az ACER-hez, bár sokkal egyszerűbb.
 
 ## 2 Háttér: A policy optimalizálása
@@ -23,19 +23,19 @@ A policy gradiens módszerek úgy működnek, hogy kiszámítják a policy gradi
 
 ![image](./img/keplet1.PNG) (1)
 
-ahol πθ egy sztochasztikus politika és ˆAt az előnyfüggvény becslése a t időpontban.
+ahol πθ egy sztochasztikus házirend és ˆAt az előnyfüggvény becslése a t időpontban.
 Itt az elvárás 
 
 
 az empirikus átlagot jelzi egy véges mintakötegre egy olyan algoritmusban, amely a mintavétel és az optimalizálás között váltakozik. Automatikus alkalmazást használó megvalósítások
-a differenciáló szoftver olyan célfüggvény felépítésével működik, amelynek gradiense a politikai gradiens becslése; a ˆg becslőt a cél differenciálásával kapjuk
+a differenciáló szoftver olyan célfüggvény felépítésével működik, amelynek gradiense a házirendi gradiens becslése; a ˆg becslőt a cél differenciálásával kapjuk
 
 ![image](./img/keplet2.PNG) (2)
 
 Bár vonzó több optimalizálási lépést végrehajtani ezen a veszteséges LP G-n ugyanazon a pályán, ez nem kellően indokolt, és empirikusan gyakran pusztítóan nagy házirend-frissítésekhez vezet (lásd a 6.1. szakaszt; az eredmények nem jelennek meg, de hasonlóak voltak vagy rosszabb, mint a „nincs kivágás vagy büntetés” beállítás).
 
 ### 2.2 Bizalmi régió metódusok
-A TRPO-ban [Sch+15b] egy célfüggvény (a „helyettesítő” cél) maximalizálásra kerül, a politikafrissítés méretére vonatkozó korlátozás függvényében. Pontosabban maximalizálni
+A TRPO-ban [Sch+15b] egy célfüggvény (a „helyettesítő” cél) maximalizálásra kerül, a házirendfrissítés méretére vonatkozó korlátozás függvényében. Pontosabban maximalizálni
 
 ![image](./img/keplet34.PNG) (3)(4)
 
@@ -44,7 +44,7 @@ A TRPO-t igazoló elmélet valójában egy büntetés alkalmazását javasolja m
 
 ![image](./img/keplet5.PNG) (5)
 
-valamilyen β együtthatóra. Ez abból a tényből következik, hogy egy bizonyos helyettesítő cél (amely az átlag helyett a max. KL-t számolja ki az állapotok felett) alsó korlátot (azaz pesszimista korlátot) képez a π politika teljesítményére. A TRPO kemény megszorítást alkalmaz, nem pedig büntetést, mert nehéz egyetlen β-értéket kiválasztani, amely jól teljesít a különböző problémák között – vagy akár egyetlen problémán belül is, ahol a jellemzők a tanulás során változnak. Ezért a TRPO monoton javítását emuláló elsőrendű algoritmus céljának eléréséhez a kísérletek azt mutatják, hogy nem elegendő egyszerűen egy rögzített β büntetési együtthatót választani és optimalizálni a büntetett értéket az objektív egyenlet (5) SGD-vel; további módosítások szükségesek.
+valamilyen β együtthatóra. Ez abból a tényből következik, hogy egy bizonyos helyettesítő cél (amely az átlag helyett a max. KL-t számolja ki az állapotok felett) alsó korlátot (azaz pesszimista korlátot) képez a π házirend teljesítményére. A TRPO kemény megszorítást alkalmaz, nem pedig büntetést, mert nehéz egyetlen β-értéket kiválasztani, amely jól teljesít a különböző problémák között – vagy akár egyetlen problémán belül is, ahol a jellemzők a tanulás során változnak. Ezért a TRPO monoton javítását emuláló elsőrendű algoritmus céljának eléréséhez a kísérletek azt mutatják, hogy nem elegendő egyszerűen egy rögzített β büntetési együtthatót választani és optimalizálni a büntetett értéket az objektív egyenlet (5) SGD-vel; további módosítások szükségesek.
 
 
 ## 3 Kivágott Surrogate Objective
@@ -53,7 +53,7 @@ Jelölje rt(θ) a valószínűségi arányt rt(θ) = πθ (at | st)
 
 ![image](./img/keplet6.PNG) (6)
 
-A CP I felső index a konzervatív politikai iterációra utal [KL02], ahol ezt a célt javasolták. Korlátozás nélkül az LCP I maximalizálása túlzottan nagy mértékű szabályzatfrissítéshez vezetne; ezért most megfontoljuk, hogyan módosítsuk a célt, hogy szankcionáljuk a szabályzat azon változtatásait, amelyek az rt(θ)-t 1-ről eltávolítják.
+A CP I felső index a konzervatív házirendi iterációra utal [KL02], ahol ezt a célt javasolták. Korlátozás nélkül az LCP I maximalizálása túlzottan nagy mértékű szabályzatfrissítéshez vezetne; ezért most megfontoljuk, hogyan módosítsuk a célt, hogy szankcionáljuk a szabályzat azon változtatásait, amelyek az rt(θ)-t 1-ről eltávolítják.
 
 Az általunk javasolt fő cél a következő:
 
@@ -72,7 +72,7 @@ A 2. ábra egy másik intuíciós forrást ad az LCLIP helyettesítő objektívv
 2. ábra: Helyettesítő célok, amikor interpolálunk a kezdeti θold házirend-paraméter és a frissített házirend-paraméter között, amelyet a PPO egy iterációja után számítunk ki. A frissített házirend KL eltérése körülbelül 0,02 a kezdeti házirendhez képest, és ez az a pont, ahol az LCLIP maximális. Ez a diagram megfelel a Hopper-v1 probléma első házirend-frissítésének, a 6.1. szakaszban megadott hiperparaméterek használatával.
 
 ## 4 Adaptív KL büntetési együttható
-Egy másik megközelítés, amely a kivágott helyettesítő célkitűzés alternatívájaként, vagy mellette használható, az, hogy a KL divergenciára büntetést alkalmazunk, és a büntetési együtthatót úgy adaptáljuk, hogy elérjük a KL divergencia dtarg valamilyen célértékét. politika frissítése. Kísérleteink során azt találtuk, hogy a KL-büntetés rosszabbul teljesített, mint a kivágott helyettesítő objektív, azonban ide soroltuk, mert ez egy fontos alapérték.
+Egy másik megközelítés, amely a kivágott helyettesítő célkitűzés alternatívájaként, vagy mellette használható, az, hogy a KL divergenciára büntetést alkalmazunk, és a büntetési együtthatót úgy adaptáljuk, hogy elérjük a KL divergencia dtarg valamilyen célértékét. házirend frissítése. Kísérleteink során azt találtuk, hogy a KL-büntetés rosszabbul teljesített, mint a kivágott helyettesítő objektív, azonban ide soroltuk, mert ez egy fontos alapérték.
 Ennek az algoritmusnak a legegyszerűbb példányában a következő lépéseket hajtjuk végre minden házirend-frissítésnél:
 • Több korszaknyi minibatch SGD használatával optimalizálja a KL-büntetett objektívet
 
@@ -85,7 +85,7 @@ Ennek az algoritmusnak a legegyszerűbb példányában a következő lépéseket
 A frissített β-t a rendszer a következő házirend-frissítéshez használja. Ezzel a sémával időnként láthatunk olyan házirend-frissítéseket, ahol a KL eltérés jelentősen eltér a dtarg-tól, azonban ezek ritkák, és a β gyorsan alkalmazkodik. A fenti 1.5 és 2 paramétereket heurisztikusan választottuk, de az algoritmus nem túl érzékeny rájuk. A β kezdeti értéke egy másik hiperparaméter, de a gyakorlatban nem fontos, mert az algoritmus gyorsan módosítja.
 
 ## 5 Algoritmus
-Az előző szakaszok helyettesítő veszteségei kiszámíthatók és megkülönböztethetők egy tipikus politikai gradiens implementáció kisebb változtatásával. Az automatikus differenciálást használó megvalósításoknál egyszerűen meg kell alkotni az LCLIP vagy LKLP EN veszteséget az LP G helyett, és több lépésben sztochasztikus gradiens emelkedést kell végrehajtani ezen a célon.
+Az előző szakaszok helyettesítő veszteségei kiszámíthatók és megkülönböztethetők egy tipikus házirendi gradiens implementáció kisebb változtatásával. Az automatikus differenciálást használó megvalósításoknál egyszerűen meg kell alkotni az LCLIP vagy LKLP EN veszteséget az LP G helyett, és több lépésben sztochasztikus gradiens emelkedést kell végrehajtani ezen a célon.
 
 A legtöbb varianciacsökkentett előny-függvény becslő számítási technikája V (s) tanult állapot-érték függvényt használ; például az általánosított előnybecslés [Sch+15a], vagy a véges horizontú becslések [Mni+16]-ban. Ha olyan neurális hálózati architektúrát használunk, amely megosztja a paramétereket a házirend- és az értékfüggvény között, akkor olyan veszteségfüggvényt kell használnunk, amely egyesíti a házirend helyettesítőjét és az értékfüggvény hibatagját. Ezt a célt tovább lehet növelni egy entrópia bónusz hozzáadásával az elegendő feltárás biztosítására, amint azt a korábbi munkákban javasolták [Wil92; Mni+16].
 Ezeket a kifejezéseket kombinálva a következő célt kapjuk, amely (hozzávetőlegesen) maximalizált
@@ -136,7 +136,7 @@ Az eredményeket az 1. táblázat mutatja. Megjegyzendő, hogy a pontszám negat
 1. táblázat: A folyamatos ellenőrzés benchmark eredményei. Átlagos normalizált pontszámok (az algoritmus több mint 21 futtatása, 7 környezetben) minden algoritmus/hiperparaméter-beállításhoz. β-t 1-re inicializáltuk.
 
 ## 6.2 Összehasonlítás a folyamatos tartomány más algoritmusaival
-Ezután összehasonlítjuk a PPO-t (a 3. szakasz „kivágott” helyettesítő célkitűzésével) számos más szakirodalmi módszerrel, amelyeket folyamatos problémák esetén hatékonynak tartanak. Összehasonlítottuk a következő algoritmusok hangolt implementációival: bizalmi régió politika optimalizálása [Sch+15b], keresztentrópia módszer (CEM) [SL06], vanília politika gradiens adaptív lépésmérettel3, A2C [Mni+16], A2C bizalmi régióval [ Wan+16]. Az A2C az előny aktor kritikus rövidítése, és az A3C szinkron változata, amelyről azt találtuk, hogy ugyanolyan vagy jobb teljesítményt nyújt, mint az aszinkron verzió. A PPO-hoz az előző szakasz hiperparamétereit használtuk, ahol = 0,2. Azt látjuk, hogy a PPO szinte minden folyamatos vezérlési környezetben felülmúlja az előző módszereket.
+Ezután összehasonlítjuk a PPO-t (a 3. szakasz „kivágott” helyettesítő célkitűzésével) számos más szakirodalmi módszerrel, amelyeket folyamatos problémák esetén hatékonynak tartanak. Összehasonlítottuk a következő algoritmusok hangolt implementációival: bizalmi régió házirend optimalizálása [Sch+15b], keresztentrópia módszer (CEM) [SL06], vanília házirend gradiens adaptív lépésmérettel3, A2C [Mni+16], A2C bizalmi régióval [ Wan+16]. Az A2C az előny aktor kritikus rövidítése, és az A3C szinkron változata, amelyről azt találtuk, hogy ugyanolyan vagy jobb teljesítményt nyújt, mint az aszinkron verzió. A PPO-hoz az előző szakasz hiperparamétereit használtuk, ahol = 0,2. Azt látjuk, hogy a PPO szinte minden folyamatos vezérlési környezetben felülmúlja az előző módszereket.
 
 
  ![image](./img/abra3.PNG)

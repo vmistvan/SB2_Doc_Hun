@@ -96,3 +96,87 @@ A frissített β-t a rendszer a következő házirend-frissítéshez használja.
 ## 5 Algoritmus
 Az előző szakaszok helyettesítő veszteségei kiszámíthatók és megkülönböztethetők egy tipikus politikai gradiens implementáció kisebb változtatásával. Az automatikus differenciálást használó megvalósításoknál egyszerűen meg kell alkotni az LCLIP vagy LKLP EN veszteséget az LP G helyett, és több lépésben sztochasztikus gradiens emelkedést kell végrehajtani ezen a célon.
 
+A legtöbb varianciacsökkentett előny-függvény becslő számítási technikája V (s) tanult állapot-érték függvényt használ; például az általánosított előnybecslés [Sch+15a], vagy a véges horizontú becslések [Mni+16]-ban. Ha olyan neurális hálózati architektúrát használunk, amely megosztja a paramétereket a házirend- és az értékfüggvény között, akkor olyan veszteségfüggvényt kell használnunk, amely egyesíti a házirend helyettesítőjét és az értékfüggvény hibatagját. Ezt a célt tovább lehet növelni egy entrópia bónusz hozzáadásával az elegendő feltárás biztosítására, amint azt a korábbi munkákban javasolták [Wil92; Mni+16].
+Ezeket a kifejezéseket kombinálva a következő célt kapjuk, amely (hozzávetőlegesen) maximalizált
+minden iteráció:
+
+ (9)
+ahol c1, c2 együtthatók, S pedig entrópiabónuszt, L VFt pedig négyzetes hibaveszteséget (Vθ(st) − Vtargt)2.
+
+Az [Mni+16]-ban népszerűsített és ismétlődő neurális hálózatokhoz jól használható irányelv-gradiens megvalósítási stílus T időlépésre futtatja a házirendet (ahol T sokkal kisebb, mint az epizód hossza), és az összegyűjtött mintákat egy frissítés. Ez a stílus olyan előnybecslőt igényel, amely nem néz túl a T időlépésen. Az [Mni+16] által használt becslés
+ (10)
+ahol t adja meg az időindexet [0, T]-ben, egy adott T hosszúságú pályaszakaszon belül. Ezt a választást általánosítva használhatjuk az általánosított előnybecslés csonka változatát, amely a (10) egyenletre redukálódik, ha λ = 1:
+
+
+Az alábbiakban látható egy proximális házirend-optimalizálási (PPO) algoritmus, amely rögzített hosszúságú pályaszegmenseket használ. Minden iteráció, N (párhuzamos) szereplő mindegyike T időlépésnyi adatot gyűjt. Ezután megszerkesztjük a helyettesítő veszteséget ezeken az NT időlépéseken, és optimalizáljuk a minibatch SGD-vel (vagy általában a jobb teljesítmény érdekében Adam [KB14]) K epochákra.
+
+## 6 Kísérlet
+### 6.1 A helyettesítő célok összehasonlítása
+Először is összehasonlítunk több különböző helyettesítő célt különböző hiperparaméterek alatt. Itt összehasonlítjuk az LCLIP helyettesítő objektívet számos természetes variációval és ablált változattal.
+
+
+A KL-büntetéshez használhatunk rögzített β büntetési együtthatót vagy adaptív együtthatót a 4. szakaszban leírtak szerint a dtarg KL célérték használatával. Ne feledje, hogy a naplózónában is próbáltunk vágni, de a teljesítmény nem volt jobb.
+Mivel az egyes algoritmusváltozatokhoz hiperparamétereket keresünk, egy számítási szempontból olcsó benchmarkot választottunk az algoritmusok teszteléséhez. Nevezetesen 7 db szimulált robotikai feladatot2 alkalmaztunk az OpenAI Gymben [Bro+16], melyek a MuJoCo [TET12] fizikai motort használják. Mindegyiken egymillió lépésnyi edzést végzünk. A kivágáshoz használt hiperparaméterek ( ) és a KL büntetés (β, dtarg) mellett, amelyekre keresünk, a többi hiperparamétert a 3. táblázat tartalmazza.
+A házirend ábrázolásához egy teljesen összekapcsolt MLP-t használtunk két, 64 egységből álló rejtett réteggel és tanh nemlinearitásokkal, a Gauss-eloszlás átlagát adva ki változó szórással, követve [Sch+15b; Dua+16]. Nem osztjuk meg a paramétereket a házirend és az értékfüggvény között (tehát a c1 együttható irreleváns), és nem használunk entrópia bónuszt.
+Mindegyik algoritmus mind a 7 környezetben futott, mindegyiken 3 véletlenszerű maggal. Az algoritmus minden egyes futtatását úgy értékeltük, hogy kiszámítottuk az utolsó 100 epizód átlagos teljes jutalmát. Az egyes környezetekhez tartozó pontszámokat eltoltuk és skáláztuk úgy, hogy a véletlenszerű házirend 0-t adjon, a legjobb eredményt pedig 1-re állítottuk, és 21 futásból átlagoltuk, hogy minden algoritmusbeállításhoz egyetlen skalárt kapjunk.
+Az eredményeket az 1. táblázat mutatja. Megjegyzendő, hogy a pontszám negatív a vágás vagy büntetés nélküli beállításnál, mivel egy környezet (fél gepárd) esetén nagyon negatív pontszámot ad, ami rosszabb, mint a kezdeti véletlenszerű házirend.
+
+| algorithm avg. | normalized score |
+| --- | --- |
+| No clipping or penalty | -0.39 |
+| Clipping,  = 0.1 | 0.76 |
+| Clipping,  = 0.2 | 0.82 |
+| Clipping,  = 0.3 | 0.70 |
+| Adaptive KL dtarg = 0.003 | 0.68 |
+| Adaptive KL dtarg = 0.01 | 0.74 |
+| Adaptive KL dtarg = 0.03 | 0.71 |
+| Fixed KL, β = 0.3 | 0.62 |
+| Fixed KL, β = 1. | 0.71 |
+| Fixed KL, β = 3. | 0.72 |
+| Fixed KL, β = 10. | 0.69 |
+
+1. táblázat: A folyamatos ellenőrzés benchmark eredményei. Átlagos normalizált pontszámok (az algoritmus több mint 21 futtatása, 7 környezetben) minden algoritmus/hiperparaméter-beállításhoz. β-t 1-re inicializáltuk.
+
+## 6.2 Összehasonlítás a folyamatos tartomány más algoritmusaival
+Ezután összehasonlítjuk a PPO-t (a 3. szakasz „kivágott” helyettesítő célkitűzésével) számos más szakirodalmi módszerrel, amelyeket folyamatos problémák esetén hatékonynak tartanak. Összehasonlítottuk a következő algoritmusok hangolt implementációival: bizalmi régió politika optimalizálása [Sch+15b], keresztentrópia módszer (CEM) [SL06], vanília politika gradiens adaptív lépésmérettel3, A2C [Mni+16], A2C bizalmi régióval [ Wan+16]. Az A2C az előny aktor kritikus rövidítése, és az A3C szinkron változata, amelyről azt találtuk, hogy ugyanolyan vagy jobb teljesítményt nyújt, mint az aszinkron verzió. A PPO-hoz az előző szakasz hiperparamétereit használtuk, ahol = 0,2. Azt látjuk, hogy a PPO szinte minden folyamatos vezérlési környezetben felülmúlja az előző módszereket.
+
+3. ábra: Több algoritmus összehasonlítása több MuJoCo környezetben, egymillió időlépésre való betanítás.
+
+## 6.3 Bemutató a folyamatos tartományban: Humanoid futás és kormányzás
+Annak érdekében, hogy bemutassuk a PPO teljesítményét a nagy dimenziós folyamatos vezérlési problémákkal kapcsolatban, egy 3D-s humanoidot magában foglaló feladatsoron edzünk, ahol a robotnak futnia, kormányoznia kell, és fel kell kelnie a földről, esetleg miközben kockák dobálják. Az általunk tesztelt három feladat a következő: (1) RoboschoolHumanoid: csak előrefelé történő mozgás, (2) RoboschoolHumanoidFlagrun: a célpont helyzete véletlenszerűen változik 200 lépésenként, vagy amikor elérjük a célt, (3) RoboschoolHumanoidFlagrunHarder, ahol a robotot kockákkal dobálják és fel kell kelnie a földről. Lásd az 5. ábrát egy tanult irányelv állóképeinek megjelenítéséhez, és a 4. ábrán a három feladat tanulási görbéiért. A hiperparamétereket a 4. táblázat tartalmazza. Egyidejű munkában Heess et al. [Hee+17] a PPO adaptív KL-változatát (4. szakasz) használta a 3D-s robotok helyváltoztatási irányelveinek megismerésére.
+
+5. ábra: A RoboschoolHumanoidFlagrun-tól tanult házirend állókép-keretei. Az első hat képkockában a robot egy cél felé fut. Ezután a pozíció véletlenszerűen megváltozik, és a robot megfordul, és az új cél felé fut.
+
+### 6.4 Összehasonlítás más algoritmusokkal az Atari tartományban
+A PPO-t az Arcade Learning Environment [Bel+15] benchmarkon is futtattuk, és összehasonlítottuk az A2C [Mni+16] és az ACER [Wan+16] jól hangolt implementációival. Mindhárom algoritmus esetében ugyanazt a házirend-hálózati architektúrát használtuk, mint az [Mni+16]-ban. A PPO hiperparamétereit az 5. táblázat tartalmazza. A másik két algoritmushoz olyan hiperparamétereket használtunk, amelyeket úgy hangoltunk, hogy maximalizáljuk a teljesítményt ezen a referenciaértéken.
+Az eredmények és a tanulási görbék táblázata mind a 49 játékra vonatkozóan a B. függelékben található. A következő két pontozási mutatót vesszük figyelembe: (1) epizódonkénti átlagos jutalom a teljes edzési időszak alatt (ami a gyors tanulást segíti elő), és (2) átlagos jutalom per epizód. epizód az edzés utolsó 100 epizódjából (ami kedvez a végső teljesítménynek). A 2. táblázat az egyes algoritmusok által „nyert” játékok számát mutatja, ahol a győztest úgy számítjuk ki, hogy a három próba pontozási mutatóját átlagoljuk.
+
+A2C ACER PPO Tie
+(1) avg. episode reward over all of training 1 18 30 0
+(2) avg. episode reward over last 100 episodes 1 28 19 1
+2. táblázat: Az egyes algoritmusok által „nyert” játékok száma, ahol a pontozási mutatót három próba átlaga alapján számítják ki.
+
+## 7 Következtetés
+Bevezettük a proximális házirend-optimalizálást, a házirend-optimalizálási módszerek egy olyan családját, amely több sztochasztikus gradiens emelkedést használ az egyes szabályzatfrissítések végrehajtásához. Ezek a módszerek a bizalom-régió módszerek stabilitásával és megbízhatóságával rendelkeznek, de sokkal egyszerűbb a megvalósításuk, mindössze néhány sornyi kódváltást igényelnek a vanília házirend gradiens megvalósításához, amely általánosabb beállításokban alkalmazható (például közös architektúra használatakor a házirendhez és értékfüggvény), és jobb általános teljesítményt nyújtanak.
+
+## 8 Köszönetnyilvánítás
+Köszönet Rocky Duannak, Peter Chennek és másoknak az OpenAI-nál az éleslátó megjegyzésekért.
+
+## References
+[Bel+15] M. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. “The arcade learning environment: An evaluation platform for general agents”. In: Twenty-Fourth International Joint Conference on Artificial Intelligence. 2015.
+[Bro+16] G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba. “OpenAI Gym”. In: arXiv preprint arXiv:1606.01540 (2016).
+[Dua+16] Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel. “Benchmarking Deep Reinforcement Learning for Continuous Control”. In: arXiv preprint arXiv:1604.06778 (2016).
+[Hee+17] N. Heess, S. Sriram, J. Lemmon, J. Merel, G. Wayne, Y. Tassa, T. Erez, Z. Wang, A. Eslami, M. Riedmiller, et al. “Emergence of Locomotion Behaviours in Rich Environments”. In: arXiv preprint arXiv:1707.02286 (2017).
+[KL02] S. Kakade and J. Langford. “Approximately optimal approximate reinforcement learning”. In: ICML. Vol. 2. 2002, pp. 267–274.
+[KB14] D. Kingma and J. Ba. “Adam: A method for stochastic optimization”. In: arXiv preprint arXiv:1412.6980 (2014).
+[Mni+15] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al. “Human-level control through deep reinforcement learning”. In: Nature 518.7540 (2015), pp. 529–533.
+[Mni+16] V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. P. Lillicrap, T. Harley, D. Silver, and K. Kavukcuoglu. “Asynchronous methods for deep reinforcement learning”. In: arXiv preprint arXiv:1602.01783 (2016).
+[Sch+15a] J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel. “High-dimensional continuous control using generalized advantage estimation”. In: arXiv preprint arXiv:1506.02438 (2015).
+[Sch+15b] J. Schulman, S. Levine, P. Moritz, M. I. Jordan, and P. Abbeel. “Trust region policy optimization”. In: CoRR, abs/1502.05477 (2015).
+[SL06] I. Szita and A. L¨orincz. “Learning Tetris using the noisy cross-entropy method”. In: Neural computation 18.12 (2006), pp. 2936–2941.
+[TET12] E. Todorov, T. Erez, and Y. Tassa. “MuJoCo: A physics engine for model-based control”. In: Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on. IEEE. 2012, pp. 5026–5033.
+[Wan+16] Z. Wang, V. Bapst, N. Heess, V. Mnih, R. Munos, K. Kavukcuoglu, and N. de Freitas. “Sample Efficient Actor-Critic with Experience Replay”. In: arXiv preprint arXiv:1611.01224 (2016).
+[Wil92] R. J. Williams. “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. In: Machine learning 8.3-4 (1992), pp. 229–256.
+
+
+

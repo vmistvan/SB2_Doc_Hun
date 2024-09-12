@@ -181,6 +181,7 @@ Köszönet Rocky Duannak, Peter Chennek és másoknak az OpenAI-nál az éleslá
 
 ## A Hyperparameters
 
+
 Hyperparameter | Value
 --- | ---
 Horizon (T) | 2048
@@ -189,31 +190,97 @@ Num. epochs | 10
 Minibatch size | 64
 Discount (γ) | 0.99
 GAE parameter (λ) | 0.95
+
 Table 3: PPO hyperparameters used for the Mujoco 1 million timestep benchmark.
 
-Hyperparameter Value
-Horizon (T) 512
-Adam stepsize ∗
-Num. epochs 15
-Minibatch size 4096
-Discount (γ) 0.99
-GAE parameter (λ) 0.95
-Number of actors 32 (locomotion), 128 (flagrun)
-Log stdev. of action distribution LinearAnneal(−0.7, −1.6)
-Table 4: PPO hyperparameters used for the Roboschool experiments. Adam stepsize was adjusted based on
-the target value of the KL divergence.
-Hyperparameter Value
-Horizon (T) 128
-Adam stepsize 2.5 × 10−4 × α
-Num. epochs 3
-Minibatch size 32 × 8
-Discount (γ) 0.99
-GAE parameter (λ) 0.95
-Number of actors 8
-Clipping parameter  0.1 × α
-VF coeff. c1 (9) 1
-Entropy coeff. c2 (9) 0.01
-Table 5: PPO hyperparameters used in Atari experiments. α is linearly annealed from 1 to 0 over the course
-of learning.
+
+Hyperparameter | Value
+--- | ---
+Horizon (T) | 512
+Adam stepsize | ∗
+Num. epochs | 15
+Minibatch size | 4096
+Discount (γ) | 0.99
+GAE parameter (λ) | 0.95
+Number of actors | 32 (locomotion), 128 (flagrun)
+Log stdev. of action distribution | LinearAnneal(−0.7, −1.6)
+
+Table 4: PPO hyperparameters used for the Roboschool experiments. Adam stepsize was adjusted based on the target value of the KL divergence.
 
 
+Hyperparameter | Value
+--- | ---
+Horizon (T) | 128
+Adam stepsize | 2.5 × 10−4 × α
+Num. epochs | 3
+Minibatch size | 32 × 8
+Discount (γ) | 0.99
+GAE parameter (λ) | 0.95
+Number of actors | 8
+Clipping parameter  | 0.1 × α
+VF coeff. c1 (9) | 1
+Entropy coeff. c2 (9) | 0.01
+
+Table 5: PPO hyperparameters used in Atari experiments. α is linearly annealed from 1 to 0 over the course of learning.
+
+
+## B Teljesítmény további Atari játékokon
+
+Itt bemutatjuk a PPO és az A2C összehasonlítását egy nagyobb, 49 Atari-játékból álló gyűjteményben. A 6. ábra a három véletlenszerű mag tanulási görbéit mutatja, míg a 6. táblázat az átlagos teljesítményt mutatja.
+
+
+6. ábra: A PPO és az A2C összehasonlítása mind a 49 ATARI játékon, amelyek az OpenAI Gymben szerepeltek a megjelenés időpontjában.
+
+| | A2C | ACER | PPO |
+| Alien | 1141.7 1655.4 1850.3
+| Amidar | 380.8 827.6 674.6
+| Assault | 1562.9 4653.8 4971.9
+| Asterix | 3176.3 6801.2 4532.5
+| Asteroids | 1653.3 2389.3 2097.5
+| Atlantis | 729265.3 1841376.0 2311815.0
+| BankHeist | 1095.3 1177.5 1280.6
+| BattleZone | 3080.0 8983.3 17366.7
+| BeamRider | 3031.7 3863.3 1590.0
+| Bowling | 30.1 33.3 40.1
+| Boxing | 17.7 98.9 94.6
+| Breakout | 303.0 456.4 274.8
+| Centipede | 3496.5 8904.8 4386.4
+| ChopperCommand | 1171.7 5287.7 3516.3
+| CrazyClimber | 107770.0 132461.0 110202.0
+| DemonAttack | 6639.1 38808.3 11378.4
+| DoubleDunk | -16.2 -13.2 -14.9
+| Enduro | 0.0 0.0 758.3
+| FishingDerby | 20.6 34.7 17.8
+| Freeway | 0.0 0.0 32.5
+| Frostbite | 261.8 285.6 314.2
+| Gopher | 1500.9 37802.3 2932.9
+| Gravitar | 194.0 225.3 737.2
+| IceHockey | -6.4 -5.9 -4.2
+| Jamesbond | 52.3 261.8 560.7
+| Kangaroo | 45.3 50.0 9928.7
+| Krull | 8367.4 7268.4 7942.3
+| KungFuMaster | 24900.3 27599.3 23310.3
+| MontezumaRevenge | 0.0 0.3 42.0
+| MsPacman | 1626.9 2718.5 2096.5
+| NameThisGame | 5961.2 8488.0 6254.9
+| Pitfall | -55.0 -16.9 -32.9
+| Pong | 19.7 20.7 20.7
+| PrivateEye | 91.3 182.0 69.5
+| Qbert | 10065.7 15316.6 14293.3
+| Riverraid | 7653.5 9125.1 8393.6
+| RoadRunner | 32810.0 35466.0 25076.0
+| Robotank | 2.2 2.5 5.5
+| Seaquest | 1714.3 1739.5 1204.5
+| SpaceInvaders | 744.5 1213.9 942.5
+| StarGunner | 26204.0 49817.7 32689.0
+| Tennis | -22.2 -17.6 -14.8
+| TimePilot | 2898.0 4175.7 4342.0
+| Tutankham | 206.8 280.8 254.4
+| UpNDown | 17369.8 145051.4 95445.0
+| Venture | 0.0 0.0 0.0
+| VideoPinball | 19735.9 156225.6 37389.0
+| WizardOfWor | 859.0 2308.3 4185.3
+| Zaxxon | 16.3 29.0 5008.7
+
+6. táblázat: A PPO és A2C átlagos végeredményei (legutóbbi 100 epizód) Atari játékokon 40 millió játékkocka (10 millió) után
+időlépések).

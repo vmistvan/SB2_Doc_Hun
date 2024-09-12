@@ -228,7 +228,7 @@ Table 5: PPO hyperparameters used in Atari experiments. α is linearly annealed 
 
 Itt bemutatjuk a PPO és az A2C összehasonlítását egy nagyobb, 49 Atari-játékból álló gyűjteményben. A 6. ábra a három véletlenszerű mag tanulási görbéit mutatja, míg a 6. táblázat az átlagos teljesítményt mutatja.
 
-![image](./img/graphs.png)
+![image](./img/graphs.PNG)
 6. ábra: A PPO és az A2C összehasonlítása mind a 49 ATARI játékon, amelyek az OpenAI Gymben szerepeltek a megjelenés időpontjában.
 
 | | A2C | ACER | PPO |

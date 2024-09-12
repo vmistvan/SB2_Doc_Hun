@@ -21,7 +21,7 @@ Kísérleteink összehasonlítják a helyettesítő cél különböző változat
 ### 2.1. Szabályzati gradiens módszerek
 A policy gradiens módszerek úgy működnek, hogy kiszámítják a policy gradiens becslését, és egy sztochasztikus gradiens emelkedési algoritmushoz csatlakoztatják. A leggyakrabban használt gradiensbecslő a következővel rendelkezik:
 
-(1)
+![image](./img/keplet1.PNG) (1)
 
 ahol πθ egy sztochasztikus politika és ˆAt az előnyfüggvény becslése a t időpontban.
 Itt az elvárás 
@@ -29,56 +29,45 @@ Itt az elvárás
 
 az empirikus átlagot jelzi egy véges mintakötegre egy olyan algoritmusban, amely a mintavétel és az optimalizálás között váltakozik. Automatikus alkalmazást használó megvalósítások
 a differenciáló szoftver olyan célfüggvény felépítésével működik, amelynek gradiense a politikai gradiens becslése; a ˆg becslőt a cél differenciálásával kapjuk
-(2)
+
+![image](./img/keplet2.PNG) (2)
+
 Bár vonzó több optimalizálási lépést végrehajtani ezen a veszteséges LP G-n ugyanazon a pályán, ez nem kellően indokolt, és empirikusan gyakran pusztítóan nagy házirend-frissítésekhez vezet (lásd a 6.1. szakaszt; az eredmények nem jelennek meg, de hasonlóak voltak vagy rosszabb, mint a „nincs kivágás vagy büntetés” beállítás).
 
 ### 2.2 Bizalmi régió metódusok
 A TRPO-ban [Sch+15b] egy célfüggvény (a „helyettesítő” cél) maximalizálásra kerül, a politikafrissítés méretére vonatkozó korlátozás függvényében. Pontosabban maximalizálni
 
-(3)
-(4)
+![image](./img/keplet34.PNG) (3)(4)
+
 Itt a θold a házirend-paraméterek vektora a frissítés előtt. Ez a probléma hatékonyan közelítőleg megoldható a konjugált gradiens algoritmussal, miután lineáris közelítést végzünk a célhoz és másodfokú közelítést a kényszerhez.
 A TRPO-t igazoló elmélet valójában egy büntetés alkalmazását javasolja megszorítás helyett, azaz a korlátlan optimalizálási probléma megoldását
 
+![image](./img/keplet5.PNG) (5)
 
-valamilyen β együtthatóra. Ez abból a tényből következik, hogy egy bizonyos helyettesítő cél (amely kiszámítja
-a max. KL over states az átlag helyett) alsó korlátot (azaz pesszimista korlátot) képez a
-a politika teljesítménye π. A TRPO kemény kényszert alkalmaz, nem pedig büntetést, mert kemény
-hogy egyetlen β-értéket válasszunk, amely jól teljesít a különböző problémák között – vagy akár egyetlenegyen belül is
-probléma, ahol a jellemzők a tanulás során változnak. Ezért a célunk elérése érdekében
-egy elsőrendű algoritmus, amely a TRPO monoton javítását emulálja, a kísérletek azt mutatják
-hogy nem elegendő egyszerűen egy rögzített β büntetési együtthatót választani és optimalizálni a büntetett
-objektív egyenlet (5) SGD-vel; további módosítások szükségesek.
-
-
-
-valamilyen β együtthatóra. Ez abból a tényből következik, hogy egy bizonyos helyettesítő cél (amely az átlag helyett a max. KL-t számolja ki az állapotok felett) alsó korlátot (azaz pesszimista korlátot) képez a π politika teljesítményére. A TRPO kemény megszorítást alkalmaz, nem pedig büntetést, mert nehéz egyetlen β-értéket kiválasztani, amely jól teljesít a különböző problémák között – vagy akár egyetlen problémán belül is, ahol a jellemzők a tanulás során változnak. Ezért a TRPO monoton javítását emuláló elsőrendű algoritmus céljának eléréséhez a kísérletek azt mutatják, hogy nem elegendő egyszerűen egy rögzített β büntetési együtthatót választani és optimalizálni a büntetett értéket.
-objektív egyenlet (5) SGD-vel; további módosítások szükségesek.
+valamilyen β együtthatóra. Ez abból a tényből következik, hogy egy bizonyos helyettesítő cél (amely az átlag helyett a max. KL-t számolja ki az állapotok felett) alsó korlátot (azaz pesszimista korlátot) képez a π politika teljesítményére. A TRPO kemény megszorítást alkalmaz, nem pedig büntetést, mert nehéz egyetlen β-értéket kiválasztani, amely jól teljesít a különböző problémák között – vagy akár egyetlen problémán belül is, ahol a jellemzők a tanulás során változnak. Ezért a TRPO monoton javítását emuláló elsőrendű algoritmus céljának eléréséhez a kísérletek azt mutatják, hogy nem elegendő egyszerűen egy rögzített β büntetési együtthatót választani és optimalizálni a büntetett értéket az objektív egyenlet (5) SGD-vel; további módosítások szükségesek.
 
 
 ## 3 Kivágott Surrogate Objective
 Jelölje rt(θ) a valószínűségi arányt rt(θ) = πθ (at | st)
 πθold (at | st) , tehát r(θold) = 1. A TRPO maximalizálja a „helyettesítő” célt
 
-(6)
+![image](./img/keplet6.PNG) (6)
+
 A CP I felső index a konzervatív politikai iterációra utal [KL02], ahol ezt a célt javasolták. Korlátozás nélkül az LCP I maximalizálása túlzottan nagy mértékű szabályzatfrissítéshez vezetne; ezért most megfontoljuk, hogyan módosítsuk a célt, hogy szankcionáljuk a szabályzat azon változtatásait, amelyek az rt(θ)-t 1-ről eltávolítják.
 
 Az általunk javasolt fő cél a következő:
 
-ahol az epsilon egy hiperparaméter, mondjuk = 0,2. E célkitűzés motivációja a következő. A min belül az első tag az LCP I . A második tag, a clip(rt(θ), 1 − , 1 + ) ˆAt, módosítja a helyettesítő célt a valószínűségi arány levágásával, ami eltávolítja az ösztönzést arra, hogy rt az [1 − , 1 + ] intervallumon kívülre helyezze. Végül vesszük a vágott és a le nem vágott objektív minimumát, így a végső cél a levágatlan objektív alsó korlátja (azaz egy pesszimista korlát). Ezzel a sémával csak akkor hagyjuk figyelmen kívül a valószínűségi arány változását, ha az a célt javítaná, és akkor vesszük figyelembe, ha rontja a célt. Figyeljük meg, hogy az LCLIP (θ) = LCP I (θ) a θold körüli első sorrendben (azaz ahol r = 1), azonban eltérőekké válnak, ahogy θ eltávolodik a θoldtól.
+![image](./img/keplet7.PNG) (7)
 
-1. ábra
-egyetlen tagot (azaz egyetlen t-t) ábrázol az LCLIP-ben; vegye figyelembe, hogy az r valószínűségi arányt 1 − vagy 1 + értékre vágjuk, attól függően, hogy az előny pozitív vagy negatív.r
-LCLIP
-0 1 1+
-A > 0r
-LCLIP
-0 11 −
-A < 0
+ahol az epsilon egy hiperparaméter, mondjuk = 0,2. E célkitűzés motivációja a következő. A min belül az első tag az LCP I . A második tag, a clip(rt(θ), 1 − , 1 + ) ˆAt, módosítja a helyettesítő célt a valószínűségi arány levágásával, ami eltávolítja az ösztönzést arra, hogy rt az [1 − , 1 + ] intervallumon kívülre helyezze. Végül vesszük a vágott és a le nem vágott objektív minimumát, így a végső cél a levágatlan objektív alsó korlátja (azaz egy pesszimista korlát). Ezzel a sémával csak akkor hagyjuk figyelmen kívül a valószínűségi arány változását, ha az a célt javítaná, és akkor vesszük figyelembe, ha rontja a célt. Figyeljük meg, hogy az LCLIP (θ) = LCP I (θ) a θold körüli első sorrendben (azaz ahol r = 1), azonban eltérőekké válnak, ahogy θ eltávolodik a θoldtól. 1. ábra egyetlen tagot (azaz egyetlen t-t) ábrázol az LCLIP-ben; vegye figyelembe, hogy az r valószínűségi arányt 1 − vagy 1 + értékre vágjuk, attól függően, hogy az előny pozitív vagy negatív.r
+
+![image](./img/abra1.PNG)
 
 1. ábra: Az LCLIP helyettesítő függvény egy tagját (azaz egyetlen időlépést) ábrázoló diagramok az r valószínűségi arány függvényében, pozitív előnyök (balra) és negatív előnyök (jobb oldala) esetén. Az egyes diagramokon lévő piros kör az optimalizálás kiindulópontját mutatja, azaz r = 1. Vegye figyelembe, hogy az LCLIP ezek közül a kifejezések közül sokat összegez.
 
 A 2. ábra egy másik intuíciós forrást ad az LCLIP helyettesítő objektívvel kapcsolatban. Megmutatja, hogy számos célkitűzés hogyan változik, ahogyan a házirend-frissítési irány mentén interpolálunk, amelyet a proximális házirend-optimalizálással (az algoritmus, amelyet hamarosan bemutatunk) kapunk egy folyamatos ellenőrzési problémára. Láthatjuk, hogy az LCLIP az LCP I alsó korlátja, és büntetés jár a túl nagy házirend-frissítésért.
+
+![image](./img/abra2.PNG)
 
 2. ábra: Helyettesítő célok, amikor interpolálunk a kezdeti θold házirend-paraméter és a frissített házirend-paraméter között, amelyet a PPO egy iterációja után számítunk ki. A frissített házirend KL eltérése körülbelül 0,02 a kezdeti házirendhez képest, és ez az a pont, ahol az LCLIP maximális. Ez a diagram megfelel a Hopper-v1 probléma első házirend-frissítésének, a 6.1. szakaszban megadott hiperparaméterek használatával.
 
@@ -87,10 +76,12 @@ Egy másik megközelítés, amely a kivágott helyettesítő célkitűzés alter
 Ennek az algoritmusnak a legegyszerűbb példányában a következő lépéseket hajtjuk végre minden házirend-frissítésnél:
 • Több korszaknyi minibatch SGD használatával optimalizálja a KL-büntetett objektívet
 
-(8)
+![image](./img/keplet8.PNG) (8)
+
 • Számítsa ki d = ˆEt[KL[πθold (· | st), πθ(· | st)]]
 – Ha d < dtarg/1,5, β ← β/2
 – Ha d > dtarg × 1,5, β ← β × 2
+
 A frissített β-t a rendszer a következő házirend-frissítéshez használja. Ezzel a sémával időnként láthatunk olyan házirend-frissítéseket, ahol a KL eltérés jelentősen eltér a dtarg-tól, azonban ezek ritkák, és a β gyorsan alkalmazkodik. A fenti 1.5 és 2 paramétereket heurisztikusan választottuk, de az algoritmus nem túl érzékeny rájuk. A β kezdeti értéke egy másik hiperparaméter, de a gyakorlatban nem fontos, mert az algoritmus gyorsan módosítja.
 
 ## 5 Algoritmus
@@ -100,20 +91,27 @@ A legtöbb varianciacsökkentett előny-függvény becslő számítási technik�
 Ezeket a kifejezéseket kombinálva a következő célt kapjuk, amely (hozzávetőlegesen) maximalizált
 minden iteráció:
 
- (9)
+ ![image](./img/keplet9.PNG) (9)
+ 
 ahol c1, c2 együtthatók, S pedig entrópiabónuszt, L VFt pedig négyzetes hibaveszteséget (Vθ(st) − Vtargt)2.
 
 Az [Mni+16]-ban népszerűsített és ismétlődő neurális hálózatokhoz jól használható irányelv-gradiens megvalósítási stílus T időlépésre futtatja a házirendet (ahol T sokkal kisebb, mint az epizód hossza), és az összegyűjtött mintákat egy frissítés. Ez a stílus olyan előnybecslőt igényel, amely nem néz túl a T időlépésen. Az [Mni+16] által használt becslés
- (10)
+
+![image](./img/keplet10.PNG) (10)
+ 
 ahol t adja meg az időindexet [0, T]-ben, egy adott T hosszúságú pályaszakaszon belül. Ezt a választást általánosítva használhatjuk az általánosított előnybecslés csonka változatát, amely a (10) egyenletre redukálódik, ha λ = 1:
 
-
 Az alábbiakban látható egy proximális házirend-optimalizálási (PPO) algoritmus, amely rögzített hosszúságú pályaszegmenseket használ. Minden iteráció, N (párhuzamos) szereplő mindegyike T időlépésnyi adatot gyűjt. Ezután megszerkesztjük a helyettesítő veszteséget ezeken az NT időlépéseken, és optimalizáljuk a minibatch SGD-vel (vagy általában a jobb teljesítmény érdekében Adam [KB14]) K epochákra.
+
+ ![image](./img/pseudocode1.PNG)
+
+ 
 
 ## 6 Kísérlet
 ### 6.1 A helyettesítő célok összehasonlítása
 Először is összehasonlítunk több különböző helyettesítő célt különböző hiperparaméterek alatt. Itt összehasonlítjuk az LCLIP helyettesítő objektívet számos természetes variációval és ablált változattal.
 
+ ![image](./img/experiment1.PNG)
 
 A KL-büntetéshez használhatunk rögzített β büntetési együtthatót vagy adaptív együtthatót a 4. szakaszban leírtak szerint a dtarg KL célérték használatával. Ne feledje, hogy a naplózónában is próbáltunk vágni, de a teljesítmény nem volt jobb.
 Mivel az egyes algoritmusváltozatokhoz hiperparamétereket keresünk, egy számítási szempontból olcsó benchmarkot választottunk az algoritmusok teszteléséhez. Nevezetesen 7 db szimulált robotikai feladatot2 alkalmaztunk az OpenAI Gymben [Bro+16], melyek a MuJoCo [TET12] fizikai motort használják. Mindegyiken egymillió lépésnyi edzést végzünk. A kivágáshoz használt hiperparaméterek ( ) és a KL büntetés (β, dtarg) mellett, amelyekre keresünk, a többi hiperparamétert a 3. táblázat tartalmazza.
@@ -140,10 +138,17 @@ Az eredményeket az 1. táblázat mutatja. Megjegyzendő, hogy a pontszám negat
 ## 6.2 Összehasonlítás a folyamatos tartomány más algoritmusaival
 Ezután összehasonlítjuk a PPO-t (a 3. szakasz „kivágott” helyettesítő célkitűzésével) számos más szakirodalmi módszerrel, amelyeket folyamatos problémák esetén hatékonynak tartanak. Összehasonlítottuk a következő algoritmusok hangolt implementációival: bizalmi régió politika optimalizálása [Sch+15b], keresztentrópia módszer (CEM) [SL06], vanília politika gradiens adaptív lépésmérettel3, A2C [Mni+16], A2C bizalmi régióval [ Wan+16]. Az A2C az előny aktor kritikus rövidítése, és az A3C szinkron változata, amelyről azt találtuk, hogy ugyanolyan vagy jobb teljesítményt nyújt, mint az aszinkron verzió. A PPO-hoz az előző szakasz hiperparamétereit használtuk, ahol = 0,2. Azt látjuk, hogy a PPO szinte minden folyamatos vezérlési környezetben felülmúlja az előző módszereket.
 
+ ![image](./img/abra3.PNG)
 3. ábra: Több algoritmus összehasonlítása több MuJoCo környezetben, egymillió időlépésre való betanítás.
 
 ## 6.3 Bemutató a folyamatos tartományban: Humanoid futás és kormányzás
 Annak érdekében, hogy bemutassuk a PPO teljesítményét a nagy dimenziós folyamatos vezérlési problémákkal kapcsolatban, egy 3D-s humanoidot magában foglaló feladatsoron edzünk, ahol a robotnak futnia, kormányoznia kell, és fel kell kelnie a földről, esetleg miközben kockák dobálják. Az általunk tesztelt három feladat a következő: (1) RoboschoolHumanoid: csak előrefelé történő mozgás, (2) RoboschoolHumanoidFlagrun: a célpont helyzete véletlenszerűen változik 200 lépésenként, vagy amikor elérjük a célt, (3) RoboschoolHumanoidFlagrunHarder, ahol a robotot kockákkal dobálják és fel kell kelnie a földről. Lásd az 5. ábrát egy tanult irányelv állóképeinek megjelenítéséhez, és a 4. ábrán a három feladat tanulási görbéiért. A hiperparamétereket a 4. táblázat tartalmazza. Egyidejű munkában Heess et al. [Hee+17] a PPO adaptív KL-változatát (4. szakasz) használta a 3D-s robotok helyváltoztatási irányelveinek megismerésére.
+
+![image](./img/abra4.PNG)
+ 
+4. ábra: Learning curves from PPO on 3D humanoid control tasks, using Roboschool.
+
+![image](./img/abra5.PNG)
 
 5. ábra: A RoboschoolHumanoidFlagrun-tól tanult házirend állókép-keretei. Az első hat képkockában a robot egy cél felé fut. Ezután a pozíció véletlenszerűen megváltozik, és a robot megfordul, és az új cél felé fut.
 

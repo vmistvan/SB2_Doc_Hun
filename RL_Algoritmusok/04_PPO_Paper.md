@@ -232,6 +232,9 @@ Itt bemutatjuk a PPO és az A2C összehasonlítását egy nagyobb, 49 Atari-ját
 
 6. ábra: A PPO és az A2C összehasonlítása mind a 49 ATARI játékon, amelyek az OpenAI Gymben szerepeltek a megjelenés időpontjában.
 
+
+
+
 | | A2C | ACER | PPO |
 | --- | --- | --- | --- |
 | Alien | 1141.7 | 1655.4 | 1850.3 |

@@ -382,3 +382,84 @@ __Visszatér:__ A kivont jellemzők. Ha a jellemzők kivonója nincs megosztva, 
 
 __Visszatérés típusa:__ Tensor | Tuple[tenzor, tenzor]
 
+## forward(obs, deterministic=False)
+Előrelépés az összes hálózatban (szereplő/actor és kritikus/critic)
+
+### Paraméterek:
+- __obs (Tensor)__ – Megfigyelés/Observation
+
+- __deterministic (bool)__ – Mintavételezés vagy determinisztikus műveletek használata
+
+__Visszatér:__ action, value és a log (gondolom logaritmikus - fordító) valószínűsége az akciónak.
+
+__Visszatérés típusa:__ Tuple[Tensor, Tensor, Tensor]
+
+## get_distribution(obs)
+Szerezze meg az aktuális irányelv-eloszlást a megfigyelések alapján.
+
+### Paraméterek:
+- __obs (Tensor | Dict[str, Tensor])__ –
+
+__Visszatér:__ az akcióeloszlás (action distribution).
+
+__Visszatérés típusa:__ Distribution
+
+## predict_values(obs)
+Szerezze meg a becsült értékeket a megfigyelések alapján az aktuális irányelv szerint.
+
+### Paraméterek:
+- __obs (Tensor | Dict[str, Tensor])__ – Megfigyelés / Observation
+
+__Visszatér:__ a becsült értékekkel.
+
+__Visszatérés típusa:__ Tenzor
+
+## reset_noise(n_envs=1)
+Új mintasúlyok a feltárási mátrixhoz.
+
+### Paraméterek:
+- __n_envs (int)__ –
+
+__Visszatérés típusa:__ None
+
+## stable_baselines3.ppo.CnnPolicy
+alias of ActorCriticCnnPolicy
+
+## class stable_baselines3.common.policies.ActorCriticCnnPolicy(observation_space, action_space, lr_schedule, net_arch=None, activation_fn=<class 'torch.nn.modules.activation.Tanh'>, ortho_init=True, use_sde=False, log_std_init=0.0, full_std=True, use_expln=False, squash_output=False, features_extractor_class=<class 'stable_baselines3.common.torch_layers.NatureCNN'>, features_extractor_kwargs=None, share_features_extractor=True, normalize_images=True, optimizer_class=<class 'torch.optim.adam.Adam'>, optimizer_kwargs=None)
+
+CNN házirend osztály a actor-critic algoritmusokhoz (rendelkezésre áll házirend és érték előrejelzése/prediction is). Az A2C, PPO és hasonlók használják.
+
+### Paraméterek:
+- __observation_space (Space)__ – Megfigyelési tér/Observation space
+
+- __action_space (Space)__ – Akciótér/Action space
+
+- __lr_schedule (Callable[[float], float])__ – Tanulási fok (lr = learning rate) ütemezése (lehet állandó)
+
+- __net_arch (List[int] | Dict[str, List[int]] | None)__ – Az irányelvek és az értékhálózatok specifikációja.
+
+- __activation_fn (Type[Module])__ – Aktiválási funkció
+
+- __ortho_init (bool)__ – Használja-e az ortogonális inicializálást vagy sem
+
+- __use_sde (bool)__ – Használja-e az állapotfüggő feltárást vagy sem (erről kell keresni leírást! - fordító)
+
+- __log_std_init (float)__ – A log szórásának kezdeti értéke
+
+- __full_std (bool)__ – GSDE használatakor használjunk-e (n_features x n_actions) paramétereket az std-hez a csak (n_features,) helyett
+
+- __use_expln (bool)__ – Használja az expln() függvényt az exp() helyett a pozitív szórás biztosításához (vö. papír). Lehetővé teszi a szórás nulla felett tartását és megakadályozza, hogy túl gyorsan növekedjen. A gyakorlatban általában elég az exp() is.
+
+- __squash_output (bool)__ – Függetlenül attól, hogy a kimenetet tanh függvénnyel kell-e tömöríteni, ez lehetővé teszi a határok biztosítását gSDE használatakor.
+
+- __features_extractor_class (Type[BaseFeaturesExtractor])__ – Használandó szolgáltatások kinyerő.
+
+- __features_extractor_kwargs (Dict[str, Any] | None)__ – A szolgáltatáskinyerőnek átadandó kulcsszóargumentumok.
+
+- __share_features_extractor (bool)__ – Ha igaz, a szolgáltatáskinyerő meg van osztva a házirend/policy és az értékhálózatok/value networks között.
+
+- __normalize_images (bool)__ – Normalizálja-e a képeket vagy sem, osztva 255,0-val (alapértelmezés szerint igaz)
+
+- __optimizer_class (Type[Optimizer])__ – A használandó optimalizáló, alapértelmezés szerint th.optim.Adam
+
+- __optimizer_kwargs (Dict[str, Any] | None)__ – További kulcsszó-argumentumok, a tanulási sebesség kivételével, amelyeket át kell adni az optimalizálónak

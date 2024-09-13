@@ -163,21 +163,50 @@ Tapasztalatokat gyűjt a jelenlegi házirend használatával, és kitölti a Rol
 - __rollout_buffer (RolloutBuffer)__ – Puffer, amelyet közzé kell tenni
 - __n_rollout_steps (int)__ – A gyűjtendő tapasztalatok száma környezetenként
 
-Visszatér
-:
-Igaz, ha a függvény legalább n_rollout_steps összegyűjtésével tért vissza, hamis, ha a visszahívás idő előtt leállt.
+__Visszatér:__ Igaz, ha a függvény legalább n_rollout_steps összegyűjtésével tért vissza, hamis, ha a visszahívás idő előtt leállt.
 
-Visszatérés típusa
-:
-bool
+__Visszatérés típusa:__ bool
 
-get_env()
+## get_env()
 Az aktuális környezetet adja vissza (Nincs lehet, ha nincs megadva).
 
-Visszatér
-:
-A jelenlegi környezet
+__Visszatér:__ A jelenlegi környezet
 
-Visszatérés típusa
-:
-VecEnv | Egyik sem
+__Visszatérés típusa:__ VecEnv | None
+
+## get_parameters()
+Visszaadja az ügynök paramétereit. Ide tartoznak a különböző hálózatok paraméterei, pl. kritikusok (értékfüggvények) és irányelvek (pi függvények).
+
+__Visszatér:__ Leképezés az objektumok nevéből PyTorch __state-dict__-ekre.
+
+__Visszatérés típusa:__ Dict[str, Dict]
+
+## get_vec_normalize_env()
+Ha létezik, a train env (edzési környezet) VecNormalize wrapperét küldi vissza.
+
+__Visszatér:__ A VecNormalize env.
+
+__Visszatérés típusa:__ VecNormalize | Egyik sem
+
+## learn(total_timesteps, callback=None, log_interval=1, tb_log_name='PPO', reset_num_timesteps=True, progress_bar=False)
+Visszaad egy betanított modellt.
+
+### Paraméterek:
+- __total_timesteps (int)__ – A képzéshez szükséges minták (env lépések) teljes száma
+
+- __callback (None | Callable | Lista[BaseCallback] | BaseCallback)__ – a minden lépésben meghívott visszahívás(ok) az algoritmus állapotával.
+
+- __log_interval (int)__ – on-policy algoritmusoknál (pl. PPO, A2C, …) ez a betanítási iterációk száma (azaz log_interval * n_steps * n_envs timesteps) a naplózás előtt; a szabályzaton kívüli algok esetében (pl. TD3, SAC, …) ez a naplózás előtti epizódok száma.
+
+- __tb_log_name (str)__ – a TensorBoard naplózási futtatásának neve
+
+- __reset_num_timesteps (bool)__ – vissza kell-e állítani az aktuális időlépési számot (naplózásban használatos)
+
+- __progress_bar (bool)__ – folyamatjelző sáv megjelenítése tqdm és rich használatával.
+
+- __self (SelfPPO)__ – (sajátmagára hivatkozás - fordító)
+
+__Visszatér:__ a képzett modell
+
+__Visszatérés típusa:__ SelfPPO
+

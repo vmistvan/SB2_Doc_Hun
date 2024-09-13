@@ -210,7 +210,7 @@ __Visszatér:__ a képzett modell
 
 __Visszatérés típusa:__ SelfPPO
 
-## classmethod load(path, env=Nincs, device='auto', custom_objects=Nincs, print_system_info=False, force_reset=Igaz, **kwargs)
+## classmethod load(path, env=None, device='auto', custom_objects=None, print_system_info=False, force_reset=True, **kwargs)
 Betölti a modellt egy zip-fájlból.
 __Figyelmeztetés: a terhelés a semmiből újra létrehozza a modellt, nem frissíti a helyén! Helyi terhelés (in-place load) esetén használja helyette a set_parameters paramétert.__
 
@@ -252,4 +252,133 @@ Beszerzi a házirend-műveletet egy megfigyelésből (és opcionálisan rejtett 
 __Visszatér:__ a modell akciója és a következő rejtett állapot (ismétlődő szabályzatokban használatos)
 
 __Visszatérés típusa:__ Tuple[ndarray, Tuple[ndarray, …] | None]
+
+## save(path, exclude=None, include=None)
+Elmenti az objektum összes attribútumát és a modell paramétereit egy zip-fájlba.
+
+### Paraméterek:
+- __path (str | Path | BufferedIOBase)__ – annak a fájlnak az elérési útja, ahová az rl ügynököt menteni kell
+
+- __exclude (Iterable[str] | None)__ – azon paraméterek neve, amelyeket az alapértelmezetteken kívül ki kell zárni
+
+- __include (Iterable[str] | None)__ – azon paraméterek neve, amelyek kizárhatók, de mindenképpen szerepelniük kell
+
+__Visszatérés típusa:__ None
+
+## set_env(env, force_reset=True)
+Ellenőrzi a környezet érvényességét, és ha koherens, akkor beállítja aktuális környezetnek. Továbbá minden nem vektorizált env-t vektorizált ellenőrzött paraméterekbe csomagol: - megfigyelési_terület - cselekvési_terület / observation_space - action_space
+
+### Paraméterek:
+- __env (Env | VecEnv)__ – A politika tanulásának környezete
+
+- __force_reset (bool)__ – A reset() hívás kényszerítése edzés előtt, hogy elkerülje a váratlan viselkedést. Lásd a problémát: https://github.com/DLR-RM/stable-baselines3/issues/597
+
+__Visszatérés típusa:__ None
+
+## set_logger(logger)
+Setter a logger objektumhoz.
+
+### Figyelmeztetés
+__Egyéni naplózó objektum átadásakor ez felülírja a tensorboard_log és a konstruktornak átadott részletes beállításokat.__
+
+### Paraméterek:
+logger (Logger) –
+
+__Visszatérés típusa:__ None
+
+## set_parameters(load_path_or_dict, exact_match=True, device='auto')
+Paraméterek betöltése egy adott zip-fájlból vagy egy beágyazott szótárból, amely különböző modulok paramétereit tartalmazza (lásd a get_parameters).
+
+### Paraméterek:
+- __load_path_or_iter__ – A mentett adatok helye (útvonal vagy fájlszerű, lásd a mentést), vagy a házirend által használt nn.Module paramétereket tartalmazó beágyazott szótár. A szótár az objektumneveket a torch.nn.Module.state_dict() által visszaadott állapotszótárba képezi le.
+
+- __exact_match (bool)__ – Ha igaz, akkor a megadott paramétereknek tartalmazniuk kell az egyes modulokhoz és azok paramétereihez tartozó paramétereket, ellenkező esetben kivételt vet fel. Ha False értékre van állítva, ez csak bizonyos paraméterek frissítésére használható.
+
+- __device (device | str)__ – Eszköz, amelyen a kódnak futnia kell.
+
+- __load_path_or_dict (str | Dict[str, Tenzor])__ –
+
+__Visszatérés típusa:,__ None
+
+## set_random_seed(seed=None)
+Beállítja a pszeudo-véletlen generátorok magját (python, numpy, pytorch, gym, action_space)
+
+### Paraméterek:
+seed (int | None) –
+
+__Visszatérés típusa:__ None
+
+## train()
+Frissíti a házirendet a jelenleg összegyűjtött közzétételi pufferrel.
+
+__Visszatérés típusa:__ None
+
+
+# PPO Policies / házirendek
+
+## stable_baselines3.ppo.MlpPolicy
+alias a ActorCriticPolicy-hoz
+
+## class stable_baselines3.common.policies.ActorCriticPolicy(observation_space, action_space, lr_schedule, net_arch=None, activation_fn=<class 'torch.nn.modules.activation.Tanh'>, ortho_init=True, use_sde=False, log_std_init=0.0, full_std=True, use_expln=False, squash_output=False, features_extractor_class=<class 'stable_baselines3.common.torch_layers.FlattenExtractor'>, features_extractor_kwargs=None, share_features_extractor=True, normalize_images=True, optimizer_class=<class 'torch.optim.adam.Adam'>, optimizer_kwargs=None)
+
+Irányelvosztály a szereplőkritikus algoritmusokhoz (rendelkezésre áll irányelv és érték előrejelzése is). Az A2C, PPO és hasonlók használják.
+
+### Paraméterek:
+- __observation_space (Space)__ – Megfigyelési tér
+
+- __action_space (Space)__ – Akciótér
+
+- __lr_schedule (Callable[[float], float])__ – Tanulási ütem ütemezése (lehet állandó)
+
+- __net_arch (List[int] | Dict[str, List[int]] | None)__ – Az irányelvek és az értékhálózatok specifikációja.
+
+- __activation_fn (Type[Module]__ – Aktiválási funkció
+
+- __ortho_init (bool)__ – Használja-e az ortogonális inicializálást vagy sem
+
+- __use_sde (bool)__ – Használja-e az állapotfüggő feltárást vagy sem
+
+- __log_std_init (float)__ – A log szórásának kezdeti értéke
+
+- __full_std (bool)__ – GSDE használatakor használjunk-e (n_features x n_actions) paramétereket az std-hez a csak (n_features,) helyett
+
+- __use_expln (bool)__ – Használja az expln() függvényt az exp() helyett a pozitív szórás biztosításához (vö. PPO_Paper). Lehetővé teszi a szórás nulla felett tartását és megakadályozza, hogy túl gyorsan növekedjen. A gyakorlatban általában elég az exp() is.
+
+- __squash_output (bool)__ – Függetlenül attól, hogy a kimenetet tanh függvénnyel kell-e tömöríteni, ez lehetővé teszi a határok biztosítását gSDE használatakor.
+
+- __features_extractor_class (Type[BaseFeaturesExtractor])__ – Használandó szolgáltatások kivonó.
+
+- __features_extractor_kwargs (Dict[str, Any] | None)__ – A szolgáltatáskivonónak átadandó kulcsszóargumentumok.
+
+- __share_features_extractor (bool)__ – Ha igaz (True), a szolgáltatáskivonó meg van osztva a házirend és az értékhálózat között.
+
+- __normalize_images (bool)__ – Normalizálja-e a képeket vagy sem, osztva 255,0-val (alapértelmezés szerint igaz)
+
+- __optimizer_class (Type[Optimizer])__ – A használandó optimalizáló, alapértelmezés szerint th.optim.Adam
+
+- __optimizer_kwargs (Dict[str, Any] | None)__ – További kulcsszó-argumentumok, a tanulási sebesség kivételével, amelyeket át kell adni az optimalizálónak
+
+## evaluate_actions(obs, actions)
+Értékeli a cselekvéseket a jelenlegi politika szerint, figyelembe véve a megfigyeléseket.
+
+### Paraméterek:
+- __obs (Tensor | Dict[str, Tensor])__ – Megfigyelés
+
+- __actions (Tensor)__ – Akciók
+
+__Visszatér:__ a becsült érték, a műveletek megtételének logikus valószínűsége és a műveleteloszlás entrópiája.
+
+__Visszatérés típusa:__ Tuple[Tensor, Tensor, Tensor | None]
+
+## extract_features(obs, features_extractor=None)
+Ha szükséges, feldolgozza a megfigyelést, és kivonja a jellemzőket.
+
+### Paraméterek:
+- __obs (Tensor | Dict[str, Tensor])__ – Megfigyelés
+
+- __features_extractor (BaseFeaturesExtractor | None)__ – A használható szolgáltatások kivonó. Ha nincs, akkor a self.features_extractor használatos.
+
+__Visszatér:__ A kivont jellemzők. Ha a jellemzők kivonója nincs megosztva, akkor egy sort ad vissza a színész jellemzőivel és a kritikus jellemzőivel.
+
+__Visszatérés típusa:__ Tensor | Tuple[tenzor, tenzor]
 

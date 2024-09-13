@@ -210,3 +210,46 @@ __Visszatér:__ a képzett modell
 
 __Visszatérés típusa:__ SelfPPO
 
+## classmethod load(path, env=Nincs, device='auto', custom_objects=Nincs, print_system_info=False, force_reset=Igaz, **kwargs)
+Betölti a modellt egy zip-fájlból.
+__Figyelmeztetés: a terhelés a semmiből újra létrehozza a modellt, nem frissíti a helyén! Helyi terhelés (in-place load) esetén használja helyette a set_parameters paramétert.__
+
+### Paraméterek:
+- __path (str | Path | BufferedIOBase)__ – a fájl (vagy fájlszerű) elérési útja, ahonnan az ügynök betölthető
+
+- __env (Env | VecEnv | None)__ – a betöltött modell futtatására szolgáló új környezet (None értékű lehet, ha csak egy betanított modellt használunk előrejelzésre) elsőbbséget élvez bármely mentett környezettel szemben.
+
+- __device (device | str)__ – Eszköz, amelyen a kódnak futnia kell.
+
+- __custom_objects (Dict[str, Any] | None)__ – A betöltéskor cserélendő objektumok szótára. Ha egy változó kulcsként szerepel ebben a szótárban, akkor az nem lesz deszerializálva, hanem a megfelelő elem kerül felhasználásra. Hasonló a keras.models.load_model custom_objects-hez. Hasznos, ha olyan objektum van a fájlban, amelyet nem lehet deszerializálni.
+
+- __print_system_info (bool)__ – Kinyomtatja-e a rendszerinformációkat a mentett modellből és az aktuális rendszerinformációkat (hasznos a betöltési problémák elhárításához)
+
+- __force_reset (bool)__ – A reset() hívás kényszerítése edzés előtt, hogy elkerülje a váratlan viselkedést.
+        Lásd: https://github.com/DLR-RM/stable-baselines3/issues/597
+
+- __kwargs__ – extra argumentumok a modell megváltoztatásához betöltéskor
+
+__Visszatér:__ új modellpéldány betöltött paraméterekkel
+
+__Visszatérés típusa:__ SelfBaseAlgoritm
+
+## property logger: Logger
+Getter a logger objektumhoz.
+
+## predict(observation, state=None, episode_start=None, deterministic=False)
+Beszerzi a házirend-műveletet egy megfigyelésből (és opcionálisan rejtett állapotból). Tartalmazza a cukorbevonatot a különböző megfigyelések kezelésére (például a képek normalizálására).
+
+### Paraméterek:
+- __observation (ndarray | Dict[str, ndarray])__ – a bemeneti megfigyelés
+
+- __state (Tuple[ndarray, ...] | None)__ – Az utolsó maszkok (None értékű lehet, ha az ismétlődő házirendekben/recurrent policies használatos)
+
+- __episode_start (ndarray | None)__ – Az utolsó maszkok (Nincs lehet, az ismétlődő házirendekben használatos) ez az epizódok kezdetének felel meg, ahol az RNN rejtett állapotait vissza kell állítani.
+
+- __deterministic (bool)__ – Hogy visszaadja-e a determinisztikus műveleteket vagy sem.
+
+__Visszatér:__ a modell akciója és a következő rejtett állapot (ismétlődő szabályzatokban használatos)
+
+__Visszatérés típusa:__ Tuple[ndarray, Tuple[ndarray, …] | None]
+
